@@ -53,13 +53,15 @@ unsigned short CTranslator::VKeyToNKey(const unsigned short VKey)
 
 CString CTranslator::TruncateRegistration(std::string devName)
 {
-	if (devName.size() < 19)
+	if (devName.size() < 19)	// Valid keyboard length including PID, VID & Bus data
 	{
-		return "Device Name Error \n";
+		CString cstrErrorMsg = "Device Name Error: ";
+		return cstrErrorMsg;
 	}
 
-	int iStart = 7;		// Start point of truncating string
-	int iEnd = 18;		// End point of truncating string
+	// TODO: Make this dynamic
+	int iStart	= 8;		// Start point of truncating string
+	int iEnd	= 17;		// End point of truncating string
 
 	std::string strTruncated = devName.substr(iStart, iEnd);	// Truncates device name to following params
 
