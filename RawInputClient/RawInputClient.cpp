@@ -4,13 +4,19 @@
 #include "framework.h"
 #include "RawInputClient.h"
 #include "Translator.h"
+
 #include <windows.h>
+#include <stdlib.h>
+#include <crtdbg.h>
 
 #include <iostream>
 #include <fstream>
 #include <strsafe.h>
 #include <string>
 
+
+
+#define _CRTDBG_MAP_ALLOC
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -23,6 +29,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -161,8 +169,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_INPUT:  // HID Input Intercept
     {
-        std::unique_ptr<CTranslator> translator;
-
         UINT dwSize;
 
         GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
@@ -181,22 +187,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         UINT lSize;
         GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, NULL, &lSize);
-        LPCSTR dvcInfo = (LPCSTR)malloc(lSize+1);   // Add one to counter no null terminator
+        LPCSTR dvcInfo = new char[lSize + 1];   // Add one to counter no null terminator
         GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, (LPVOID)dvcInfo, &lSize);
 
         if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
         {
-            CString strDeviceName = translator->TruncateRegistration(dvcInfo);   // Truncate device name to remove excess data
+            std::unique_ptr<CTranslator> translator(new CTranslator());    // Initiate Translator Object
 
-            OutputDebugString((LPCSTR)strDeviceName);   // Debug output device name
-            OutputDebugString("\n");
+            if (raw->data.keyboard.Flags == translator->nKey_DownFlag)
+            {
+                CString strDeviceName = translator->TruncateRegistration(dvcInfo);   // Truncate device name to remove excess data
+
+                OutputDebugString((LPCSTR)strDeviceName);   // Debug output device name
+                OutputDebugString("\n");
+            }
         }
 
+        delete[] lpb;                   // Delete LPByte object
+        delete[] dvcInfo;               // Delete allocated 
 
-        translator->~CTranslator(); // Delete Translator Object
-        delete[] lpb;
         InvalidateRect(hWnd, NULL, TRUE);	// Clear Window
         InvalidateRect(hWnd, NULL, NULL);	// Update Window
+
+        _CrtDumpMemoryLeaks();
     }
     case WM_PAINT:
         {
