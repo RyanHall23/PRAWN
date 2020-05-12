@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "RawInputClient.h"
 #include "Translator.h"
+#include <windows.h>
 
 #include <iostream>
 #include <fstream>
@@ -16,8 +17,6 @@
 HINSTANCE hInst;                                // Current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
-
-CTranslator translator;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -42,6 +41,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
+    }
+
+    RAWINPUTDEVICE rID[1];
+
+    rID[0].usUsagePage = 0x01;
+    rID[0].usUsage = 0x06; // HID keyboard
+    rID[0].dwFlags = RIDEV_INPUTSINK;
+    rID[0].hwndTarget = GetActiveWindow();
+
+    if (RegisterRawInputDevices(rID, 1, sizeof(rID[0])) == FALSE)
+    {
+        return -1;
     }
 
     MSG msg = { 0 };
@@ -111,18 +122,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   RAWINPUTDEVICE rID[1];
-
-   rID[0].usUsagePage = 0x01;
-   rID[0].usUsage = 0x06; // HID keyboard
-   rID[0].dwFlags = RIDEV_INPUTSINK;
-   rID[0].hwndTarget = hWnd;
-
-   if (RegisterRawInputDevices(rID, 1, sizeof(rID[0])) == FALSE)
-   {
-       return -1;
-   }
-
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -160,11 +159,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-    case WM_INPUT:  // HID Input Interrupt
+    case WM_INPUT:  // HID Input Intercept
     {
-        HRESULT hResult;
+        std::unique_ptr<CTranslator> translator;
+
         UINT dwSize;
-        TCHAR szTempOutput[256];
 
         GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
         LPBYTE lpb = new BYTE[dwSize];
@@ -182,19 +181,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         UINT lSize;
         GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, NULL, &lSize);
-        LPCSTR dvcInfo = (LPCSTR)malloc(sizeof(lSize));
+        LPCSTR dvcInfo = (LPCSTR)malloc(lSize+1);   // Add one to counter no null terminator
         GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, (LPVOID)dvcInfo, &lSize);
 
         if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
         {
-            hResult = 0;
-            hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n"),
-                raw->data.keyboard.MakeCode, raw->data.keyboard.Flags, raw->data.keyboard.Reserved, raw->data.keyboard.ExtraInformation, raw->data.keyboard.Message, raw->data.keyboard.VKey);
+            CString strDeviceName = translator->TruncateRegistration(dvcInfo);   // Truncate device name to remove excess data
 
-            CString strDeviceName = translator.TruncateRegistration(dvcInfo);   // Truncate device name to remove excess data
-            OutputDebugString((LPCWSTR)strDeviceName);
+            OutputDebugString((LPCSTR)strDeviceName);   // Debug output device name
+            OutputDebugString("\n");
         }
 
+
+        translator->~CTranslator(); // Delete Translator Object
         delete[] lpb;
         InvalidateRect(hWnd, NULL, TRUE);	// Clear Window
         InvalidateRect(hWnd, NULL, NULL);	// Update Window
