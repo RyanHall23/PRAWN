@@ -3,7 +3,7 @@
 
 #include "framework.h"
 #include "RawInputClient.h"
-#include "Translator.h"
+#include "Devices.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -13,8 +13,6 @@
 #include <fstream>
 #include <strsafe.h>
 #include <string>
-
-
 
 #define _CRTDBG_MAP_ALLOC
 #define MAX_LOADSTRING 100
@@ -192,19 +190,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
         {
-            std::unique_ptr<CTranslator> translator(new CTranslator());    // Initiate Translator Object
+            std::unique_ptr<CDevices> pTranslator(new CDevices());    // Initiate Devices Object
 
-            if (raw->data.keyboard.Flags == translator->nKey_DownFlag)
+            if (raw->data.keyboard.Flags == pTranslator->sKeyDownFlag)  // If flag is down
             {
-                CString strDeviceName = translator->TruncateRegistration(dvcInfo);   // Truncate device name to remove excess data
+                CString strDeviceName = pTranslator->TruncateHIDName(dvcInfo);      // Truncate device name to remove excess data
 
+                unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;       // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
+                CString cstrCurrentKey;
+
+                // TODO: Handling and registration building
+
+                if (isdigit(cTranslatedKey) || isalpha(cTranslatedKey))             // Check for valid alphanumeric key
+                {
+                    cstrCurrentKey = (char)cTranslatedKey;                          // Cast back to signed char for CString conversion
+                    cstrCurrentKey = cstrCurrentKey.MakeUpper();                    // Convert to Upper case to avoid mixing cases
+                }
+                else if (cTranslatedKey == pTranslator->cReturnKeyVirtualCode)      // Check if Return Key/End of string key has been entered
+                {
+                    cstrCurrentKey = pTranslator->cstrReturnKeyMessage;             // Mark with '!'
+                }
+
+                #ifdef DEBUG
                 OutputDebugString((LPCSTR)strDeviceName);   // Debug output device name
                 OutputDebugString("\n");
+
+                OutputDebugString((LPCSTR)cstrCurrentKey);   // Debug output device name
+                OutputDebugString("\n");
+                #endif
             }
         }
 
         delete[] lpb;                   // Delete LPByte object
-        delete[] dvcInfo;               // Delete allocated 
+        delete[] dvcInfo;               // Delete dvcInfo 
 
         InvalidateRect(hWnd, NULL, TRUE);	// Clear Window
         InvalidateRect(hWnd, NULL, NULL);	// Update Window

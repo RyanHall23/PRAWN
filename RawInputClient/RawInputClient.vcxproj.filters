@@ -27,7 +27,7 @@
     <ClInclude Include="RawInputClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Translator.h">
+    <ClInclude Include="Devices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClCompile Include="RawInputClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Translator.cpp">
+    <ClCompile Include="Devices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
