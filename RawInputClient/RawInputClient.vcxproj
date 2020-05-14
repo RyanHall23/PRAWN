@@ -147,15 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DeviceProperties.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="RawInputClient.h" />
+    <ClInclude Include="Registration.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Devices.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DeviceProperties.cpp" />
     <ClCompile Include="RawInputClient.cpp" />
     <ClCompile Include="Devices.cpp" />
+    <ClCompile Include="Registration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RawInputClient.rc" />

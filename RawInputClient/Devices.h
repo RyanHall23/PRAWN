@@ -1,6 +1,5 @@
 #pragma once
 
-#include <atlstr.h>
 #include <string>
 #include <vector>
 
@@ -10,14 +9,11 @@ class CDevices
 {
 public:
 	CDevices();		// Constructor
-	~CDevices();		// Destructor
+	~CDevices();	// Destructor
 
-	CString TruncateHIDName(std::string strHidName);		// Function that shortens HID name
+	std::string TruncateHIDName(std::string strHidName);		// Function that shortens HID name
 
-
-	const unsigned short	sKeyDownFlag			= 1;		// For checking if the keyboard flag is "down"
-	const unsigned char		cReturnKeyVirtualCode	= 13;		// For checking if the used key is a Return key
-	const CString			cstrReturnKeyMessage	= "!";		// Marks the end of the string with "return" notifier
-
-private:
+	const unsigned short	m_sKeyDownFlag			= 1;		// For checking if the keyboard flag is "down"
+	const unsigned char		m_cReturnKeyVirtualCode	= 13;		// For checking if the used key is a Return key
+	const std::string		m_strReturnKeyMessage	= "!";		// Marks the end of the string with "return" notifier
 };
