@@ -30,12 +30,24 @@
     <ClInclude Include="Devices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Registration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RawInputClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Devices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Registration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

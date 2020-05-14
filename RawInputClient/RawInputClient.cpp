@@ -4,6 +4,8 @@
 #include "framework.h"
 #include "RawInputClient.h"
 #include "Devices.h"
+#include "DeviceProperties.h"
+#include "Registration.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -22,12 +24,13 @@ HINSTANCE hInst;                                // Current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
 
+BOOL bConfigRead = FALSE;
+
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -190,32 +193,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
         {
-            std::unique_ptr<CDevices> pTranslator(new CDevices());    // Initiate Devices Object
-
-            if (raw->data.keyboard.Flags == pTranslator->sKeyDownFlag)  // If flag is down
+            if (!bConfigRead)
             {
-                CString strDeviceName = pTranslator->TruncateHIDName(dvcInfo);      // Truncate device name to remove excess data
+                std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties()); // Create smart pointer of DeviceProperties class // TODO: Make Singleton
+
+                pDeviceProperties->ReadDeviceProperties();
+
+                bConfigRead = TRUE;
+            }
+
+            std::unique_ptr<CDevices> pDevices(new CDevices());                   // Create smart pointer of Devices class
+            std::unique_ptr<CRegistration> pRegistration(new CRegistration());    // Create smart pointer of Registration class // TODO: Make Singleton
+
+            if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If flag is down
+            {
+                std::string strDeviceName = pDevices->TruncateHIDName(dvcInfo);      // Truncate device name to remove excess data
 
                 unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;       // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-                CString cstrCurrentKey;
+                std::string strCurrentKey;
+                std::string regPlate;
 
                 // TODO: Handling and registration building
 
                 if (isdigit(cTranslatedKey) || isalpha(cTranslatedKey))             // Check for valid alphanumeric key
                 {
-                    cstrCurrentKey = (char)cTranslatedKey;                          // Cast back to signed char for CString conversion
-                    cstrCurrentKey = cstrCurrentKey.MakeUpper();                    // Convert to Upper case to avoid mixing cases
+                    strCurrentKey = std::toupper(cTranslatedKey);                   // Convert to Upper case to avoid mixing cases
+                    regPlate = pRegistration->BuildRegistration(strCurrentKey);
                 }
-                else if (cTranslatedKey == pTranslator->cReturnKeyVirtualCode)      // Check if Return Key/End of string key has been entered
+                else if (cTranslatedKey == pDevices->m_cReturnKeyVirtualCode)       // Check if Return Key/End of string key has been entered
                 {
-                    cstrCurrentKey = pTranslator->cstrReturnKeyMessage;             // Mark with '!'
+                    strCurrentKey = pDevices->m_strReturnKeyMessage;                // Mark with '!'
+                    regPlate = pRegistration->BuildRegistration(strCurrentKey);
+
+                    #ifndef DEBUG
+                    OutputDebugString((LPCSTR)regPlate.c_str());   // Debug output built registration 
+                    OutputDebugString(" ");
+
+                    #endif
                 }
 
-                #ifdef DEBUG
-                OutputDebugString((LPCSTR)strDeviceName);   // Debug output device name
-                OutputDebugString("\n");
+                #ifndef DEBUG
+                OutputDebugString((LPCSTR)strDeviceName.c_str());   // Debug output device name
+                OutputDebugString(" ");
 
-                OutputDebugString((LPCSTR)cstrCurrentKey);   // Debug output device name
+                OutputDebugString((LPCSTR)strCurrentKey.c_str());   // Debug output entered key
                 OutputDebugString("\n");
                 #endif
             }
