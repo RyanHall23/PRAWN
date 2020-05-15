@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="DeviceProperties.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="RawInputClient.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Devices.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="DeviceProperties.cpp" />
     <ClCompile Include="RawInputClient.cpp" />
     <ClCompile Include="Devices.cpp" />
