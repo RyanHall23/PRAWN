@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <crtdbg.h>
+#include <CommCtrl.h>
 
 #include <iostream>
 #include <fstream>
@@ -117,7 +118,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //   COMMENTS:
 //
 //        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
+//        create and display the main program window, also builds GUI components that are constant.
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
@@ -125,8 +126,26 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   HWND hwndParent = hWnd; // Handle to the parent window
 
-   if (!hWnd)
+   int xpos = 50;            // Horizontal position of the window.
+   int ypos = 50;            // Vertical position of the window.
+   int nwidth = 200;         // Width of the window
+   int nheight = 200;        // Height of the window
+
+
+   HWND hWndComboBoxScannerA = CreateWindow(WC_COMBOBOX, TEXT(" & "),
+       CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+       xpos, ypos, nwidth, nheight, hwndParent, NULL, hInst, NULL);
+
+   ypos = 100;            // Vertical position of the window.
+
+   HWND hWndComboBoxScannerB = CreateWindow(WC_COMBOBOX, TEXT(" & "),
+       CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+       xpos, ypos, nwidth, nheight, hwndParent, NULL, hInst, NULL);
+
+
+   if (!hWnd & !hWndComboBoxScannerA & !hWndComboBoxScannerB)
    {
       return FALSE;
    }
@@ -136,6 +155,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    return TRUE;
 }
+
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
