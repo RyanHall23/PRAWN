@@ -2,6 +2,8 @@
 
 CClock::CClock()
 {
+	m_clStartTime = 0;
+	m_dbDuration = 0;
 }
 
 CClock::~CClock()

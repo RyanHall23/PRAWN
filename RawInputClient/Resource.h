@@ -15,12 +15,6 @@
 #define IDC_MYICON					2
 
 
-#define IDC_COMBOSCANNERA			110
-#define IDC_COMBOSCANNERB			111
-
-#define COMBOX1 201
-
-
 #ifndef IDC_STATIC
 #define IDC_STATIC					-1
 #endif

@@ -3,7 +3,11 @@
 
 CDeviceProperties::CDeviceProperties()
 {
-
+	m_strScannerAName		= "";
+	m_strScannerBName		= "";
+	m_strScannerLocation	= "";
+	m_iSpeedLimit			= 0;
+	m_fScannerDistance		= 0.00f;
 }
 
 CDeviceProperties::~CDeviceProperties()
