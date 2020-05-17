@@ -1,5 +1,7 @@
 // RawInputClient.cpp : Defines the entry point for the application.
 //
+// Project Settings:
+// Character set changed from unicode to multi-byte characters
 
 #include "framework.h"
 #include "RawInputClient.h"
@@ -133,7 +135,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    int nwidth = 200;         // Width of the window
    int nheight = 200;        // Height of the window
 
-
+   // Temp combo boxes, uncertain on actual implementation, MFC or Win32. MFC Requires a project shuffle & reimplementation of Raw Input
    HWND hWndComboBoxScannerA = CreateWindow(WC_COMBOBOX, TEXT(" & "),
        CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
        xpos, ypos, nwidth, nheight, hwndParent, NULL, hInst, NULL);
@@ -143,7 +145,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    HWND hWndComboBoxScannerB = CreateWindow(WC_COMBOBOX, TEXT(" & "),
        CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
        xpos, ypos, nwidth, nheight, hwndParent, NULL, hInst, NULL);
-
 
    if (!hWnd & !hWndComboBoxScannerA & !hWndComboBoxScannerB)
    {
@@ -213,12 +214,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
         {
-            if (!bConfigRead)
+            if (!bConfigRead)   // To enensure the device properties are only intilalized once, requires a singleton to be implemented
             {
                 std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties()); // Create smart pointer of DeviceProperties class // TODO: Make Singleton
-
                 pDeviceProperties->ReadDeviceProperties();
-
                 bConfigRead = TRUE;
             }
 
@@ -248,14 +247,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     #ifndef DEBUG
                     OutputDebugString((LPCSTR)regPlate.c_str());   // Debug output built registration 
                     OutputDebugString(" ");
-
                     #endif
                 }
 
                 #ifndef DEBUG
                 OutputDebugString((LPCSTR)strDeviceName.c_str());   // Debug output device name
                 OutputDebugString(" ");
-
                 OutputDebugString((LPCSTR)strCurrentKey.c_str());   // Debug output entered key
                 OutputDebugString("\n");
                 #endif
