@@ -11,6 +11,6 @@ public:
 	~CClock();			// Destructor
 	double GetTime();	// GetTime Declaration
 private:
-	std::clock_t m_clStartTime;
-	double m_dbDuration;
+	std::clock_t	m_clStartTime;
+	double			m_dbDuration;
 };
