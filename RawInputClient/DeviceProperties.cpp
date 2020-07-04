@@ -7,8 +7,8 @@ CDeviceProperties::CDeviceProperties()
 	m_strScannerBName		= "";
 	m_strScannerLocation	= "";
 	m_iSpeedLimit			= 0;
-	m_fScannerDistance		= 0.00f;
-	m_fMaximumTravelTime	= 0.00f;
+	m_dbScannerDistance		= 0.00;
+	m_dbMaximumTravelTime	= 0.00;
 }
 
 CDeviceProperties::~CDeviceProperties()
@@ -55,7 +55,7 @@ void CDeviceProperties::ReadDeviceProperties()
 				case 3:
 					m_iSpeedLimit = std::stoi(line.c_str());					// Fourth line, Speed limit of location
 				case 4:
-					m_fScannerDistance = std::stof(line);						// Fifth line, Distance between scanners
+					m_dbScannerDistance = std::stof(line);						// Fifth line, Distance between scanners
 					break;
 				}
 				wordNum++;	// Increment line number/word number
@@ -74,7 +74,7 @@ void CDeviceProperties::ReadDeviceProperties()
 /// </summary>
 void CDeviceProperties::CalculateMaximumTravelTime()
 {
-	float fSpeedLimitMetres = m_iSpeedLimit * m_fMPHToMiles;
-	m_fMaximumTravelTime = (m_fScannerDistance / (fSpeedLimitMetres / m_iSecondsInHour));
-	m_fMaximumTravelTime += (m_fMaximumTravelTime / 10);
+	double dbSpeedLimitMetres = m_iSpeedLimit * m_dbMPHToMiles;
+	m_dbMaximumTravelTime = (m_dbScannerDistance / (dbSpeedLimitMetres / m_dbSecondsInHour));
+	m_dbMaximumTravelTime += (m_dbMaximumTravelTime / 10);
 }

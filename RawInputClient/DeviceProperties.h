@@ -19,9 +19,9 @@ public:
 	std::string		m_strScannerBName;			// Scanner B device name
 	std::string		m_strScannerLocation;		// Scanner Location
 	int				m_iSpeedLimit;				// Speed limit at location				(MPH)
-	float			m_fScannerDistance;			// Distance between scanners			(Metres)
-	float			m_fMaximumTravelTime;		// Expected Travel time between scanners
+	double			m_dbScannerDistance;		// Distance between scanners			(Metres)
+	double			m_dbMaximumTravelTime;		// Expected Travel time between scanners
 
-	int				m_iSecondsInHour = 3600;
-	float			m_fMPHToMiles = 1609.344;
+	double			m_dbSecondsInHour = 3600;	// For speed/time calculations
+	double			m_dbMPHToMiles = 1609.344;	// For speed/time calculations
 };

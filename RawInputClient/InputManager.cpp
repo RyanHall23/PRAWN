@@ -44,12 +44,15 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
         if (VehicleExists(pVehicle))
         {
             auto aGetVehicle = GetVehicle(strRegistrationPlate);    // Get index and vehicle ptr
-            pVehicle = std::get<0>(aGetVehicle);
-            iVehicleIndex = std::get<1>(aGetVehicle);
+            if (std::get<0>(aGetVehicle) != NULL)
+            {
+                pVehicle = std::get<0>(aGetVehicle);
+                iVehicleIndex = std::get<1>(aGetVehicle);
 
-            pVehicle->m_dbEndTime = pClock.GetTime();
-            pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
-            SetVehicle(pVehicle, iVehicleIndex);
+                pVehicle->m_dbEndTime = pClock.GetTime();
+                pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
+                SetVehicle(pVehicle, iVehicleIndex);
+            }
         }
         else
         {
@@ -93,7 +96,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
     // Then RemoveVehicle
     if (vVehicle->m_strDirectionOrigin == "A")    // If heading in right direction
     {
-        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_fMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
+        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
             #ifndef DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
@@ -108,7 +111,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
     }
     else if(vVehicle->m_strDirectionOrigin == "B")  // If started from point B (Wrong direction
     {
-        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_fMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
+        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
             #ifndef DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
@@ -208,6 +211,8 @@ std::tuple<CVehicle*, int> CInputManager::GetVehicle(std::string strRegistration
             return std::tuple<CVehicle*, int>{m_vecActiveVehicles.at(i), i};
         }
     }
+
+    return std::tuple<CVehicle*, int>{NULL, 0};
 }
 
 /// <summary>
