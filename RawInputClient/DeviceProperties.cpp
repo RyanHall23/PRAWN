@@ -8,6 +8,7 @@ CDeviceProperties::CDeviceProperties()
 	m_strScannerLocation	= "";
 	m_iSpeedLimit			= 0;
 	m_fScannerDistance		= 0.00f;
+	m_fMaximumTravelTime	= 0.00f;
 }
 
 CDeviceProperties::~CDeviceProperties()
@@ -23,7 +24,6 @@ void CDeviceProperties::ReadDeviceProperties()
 
 	if (file.fail())	// Error handling
 	{
-
 		#ifndef DEBUG
 		OutputDebugString(TEXT("File failed to open | Not Found \n"));		// Debug output File not found/failed to open
 		#endif
@@ -41,13 +41,13 @@ void CDeviceProperties::ReadDeviceProperties()
 		{
 			if (line != "")	// If line isn't blank, safeguarding the stoi function
 			{
-				switch (wordNum)	//switch for word tracking
+				switch (wordNum)	// Switch for word tracking
 				{
 				case 0:
-					m_strScannerAName = Devices.TruncateHIDName(line);		// First line, Scanner A HID Name (truncated)
+					m_strScannerAName = Devices.TruncateHIDName(line);			// First line, Scanner A HID Name (truncated)
 					break;
 				case 1:
-					m_strScannerBName = Devices.TruncateHIDName(line);		// Second line, Scanner B HID Name (truncated)
+					m_strScannerBName = Devices.TruncateHIDName(line);			// Second line, Scanner B HID Name (truncated)
 					break;
 				case 2:
 					m_strScannerLocation = line;								// Third line, Scanner Location
@@ -61,6 +61,20 @@ void CDeviceProperties::ReadDeviceProperties()
 				wordNum++;	// Increment line number/word number
 			}
 		}
+
+
+		CalculateMaximumTravelTime();
 		file.close();	// Close file once completed
 	}
+}
+
+/// <summary>
+/// Calculate expected travel time from speed limit (MPH) and scanner distance
+/// (Scanner A & Scanner B - Metres)]
+/// </summary>
+void CDeviceProperties::CalculateMaximumTravelTime()
+{
+	float fSpeedLimitMetres = m_iSpeedLimit * m_fMPHToMiles;
+	m_fMaximumTravelTime = (m_fScannerDistance / (fSpeedLimitMetres / m_iSecondsInHour));
+	m_fMaximumTravelTime += (m_fMaximumTravelTime / 10);
 }

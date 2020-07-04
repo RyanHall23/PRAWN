@@ -3,14 +3,12 @@
 
 #include "framework.h"
 #include "RawInputClient.h"
-#include "DeviceProperties.h"
 #include "Devices.h"
 #include "InputManager.h"
 
 #include <windows.h>
 #include <stdlib.h>
 #include <crtdbg.h>
-#include <CommCtrl.h>
 
 #include <iostream>
 #include <fstream>
@@ -27,7 +25,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
  
                                                                                 // TODO: Verify memory safety
 std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create smart pointer of DeviceProperties class
-std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties());  // Create smart pointer of DeviceProperties class
 std::unique_ptr<CDevices> pDevices(new CDevices());                             // Create smart pointer of Devices class
 
 
@@ -71,7 +68,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg = { 0 };
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_RAWINPUTCLIENT));
-    pDeviceProperties->ReadDeviceProperties();
+
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -130,26 +127,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-   HWND hwndParent = hWnd; // Handle to the parent window
 
-   int xpos = 50;            // Horizontal position of the window.
-   int ypos = 50;            // Vertical position of the window.
-   int nwidth = 200;         // Width of the window
-   int nheight = 200;        // Height of the window
-
-
-   HWND hWndComboBoxScannerA = CreateWindow(WC_COMBOBOX, TEXT(" & "),
-       CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-       xpos, ypos, nwidth, nheight, hwndParent, NULL, hInst, NULL);
-
-   ypos = 100;            // Vertical position of the window.
-
-   HWND hWndComboBoxScannerB = CreateWindow(WC_COMBOBOX, TEXT(" & "),
-       CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-       xpos, ypos, nwidth, nheight, hwndParent, NULL, hInst, NULL);
-
-
-   if (!hWnd & !hWndComboBoxScannerA & !hWndComboBoxScannerB)
+   if (!hWnd)
    {
       return FALSE;
    }
