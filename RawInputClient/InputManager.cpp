@@ -1,6 +1,5 @@
 #include "InputManager.h"
 
-
 CInputManager::CInputManager()
 {
     pDeviceProperties.ReadDeviceProperties();
@@ -34,7 +33,7 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
         cFilteredKey = pDevices.m_strReturnKeyMessage;                  // Mark with '!'
         strRegistrationPlate = pRegistration.BuildRegistration(cFilteredKey);
 
-        #ifndef DEBUG
+        #ifdef _DEBUG
         OutputDebugString((LPCSTR)strRegistrationPlate.c_str());        // Debug output built registration 
         OutputDebugString(" ");
         #endif
@@ -77,7 +76,7 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
     }
 
 
-    #ifndef DEBUG
+    #ifdef _DEBUG
     OutputDebugString((LPCSTR)strShortDeviceName.c_str());   // Debug output device name
     OutputDebugString(" ");
 
@@ -92,13 +91,11 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
 /// <param name="vVehicle"></param>
 void CInputManager::CheckVehicle(CVehicle *vVehicle)
 {
-    // If speeding etc
-    // Then RemoveVehicle
     if (vVehicle->m_strDirectionOrigin == "A")    // If heading in right direction
     {
         if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
-            #ifndef DEBUG
+            #ifdef _DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
             OutputDebugString(" Speeding \n");
             #endif
@@ -113,7 +110,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
     {
         if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
-            #ifndef DEBUG
+            #ifdef _DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
             OutputDebugString(" Speeding & Wrong Way \n");
             #endif
@@ -125,7 +122,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
         }
         else // No speed limit broken, wrong way is passed
         {
-            #ifndef DEBUG
+            #ifdef _DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
             OutputDebugString(" Wrong Way \n");
             #endif
@@ -147,7 +144,7 @@ void CInputManager::AddVehicle(CVehicle *vVehicle)
     if (!VehicleExists(vVehicle))   // If vehicle doesn't exist/active
     {
         m_vecActiveVehicles.push_back(vVehicle);
-        #ifndef DEBUG
+        #ifdef _DEBUG
         OutputDebugString("\n");
         OutputDebugString("New Vehicle: ");
         OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output new vehicle
@@ -156,10 +153,12 @@ void CInputManager::AddVehicle(CVehicle *vVehicle)
     }
     else
     {
+        #ifdef _DEBUG
         OutputDebugString("\n");
         OutputDebugString("Vehicle Exists: ");
         OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output new vehicle
         OutputDebugString("\n");
+        #endif
     }
 }
 
@@ -227,8 +226,38 @@ void CInputManager::SetVehicle(CVehicle *vVehicle, int iVecIndex)
 
 /// <summary>
 /// Update Database with new entry if required from illegal vehicle state data
+/// 
+/// Reference of OLEDB - https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlconnection.begintransaction?view=netframework-4.7.2
+/// 64-bit Database Engine - https://www.microsoft.com/en-us/download/confirmation.aspx?id=13255
 /// </summary>
-void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string Offence)
+void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string strOffence)
 {
+    OleDbConnection^ oleConnection = nullptr;
+    OleDbCommand^ oleCommand = nullptr;
 
+    std::string prepSQL = ("INSERT INTO tblOffences (Registration, Location, Offence) VALUES ('" + strRegistrationPlate + "','" + pDeviceProperties.m_strScannerLocation + "','" + strOffence + "')");
+    
+    System::String^ result = gcnew System::String(prepSQL.c_str());
+    System::String^ strSQL = gcnew System::String(result);
+    System::String^ sstrDatabaseDirectory = gcnew System::String(pDeviceProperties.m_strDatabaseDirectory.c_str()); // Convert std::string to System::String
+
+    try
+    {
+        // TODO: Use db locatio from DeviceProperties and make it dynamically modifiable in runtime
+        oleConnection = gcnew OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=..\\DrivingOffences.accdb");
+        oleConnection->Open();
+        oleCommand = gcnew OleDbCommand(strSQL, oleConnection);
+
+        OleDbDataReader^ dbReader = oleCommand->ExecuteReader(System::Data::CommandBehavior::CloseConnection);
+        System::String^ Sep = gcnew System::String('*', 60);
+    }
+    catch (System::Exception^ ex)
+    {
+        CString cstrException = ex->ToString();
+    #ifdef _DEBUG
+        OutputDebugString("\n");
+        OutputDebugString(cstrException);
+        OutputDebugString("\n");
+    #endif
+    }
 }

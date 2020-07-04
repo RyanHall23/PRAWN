@@ -9,6 +9,7 @@ CDeviceProperties::CDeviceProperties()
 	m_iSpeedLimit			= 0;
 	m_dbScannerDistance		= 0.00;
 	m_dbMaximumTravelTime	= 0.00;
+	m_strDatabaseDirectory = "";
 }
 
 CDeviceProperties::~CDeviceProperties()
@@ -24,13 +25,13 @@ void CDeviceProperties::ReadDeviceProperties()
 
 	if (file.fail())	// Error handling
 	{
-		#ifndef DEBUG
+		#ifdef _DEBUG
 		OutputDebugString(TEXT("File failed to open | Not Found \n"));		// Debug output File not found/failed to open
 		#endif
 	}
 	else
 	{
-		#ifndef DEBUG
+		#ifdef _DEBUG
 		OutputDebugString(TEXT("File found \n"));							// Debug output file found
 		#endif
 
@@ -44,18 +45,22 @@ void CDeviceProperties::ReadDeviceProperties()
 				switch (wordNum)	// Switch for word tracking
 				{
 				case 0:
-					m_strScannerAName = Devices.TruncateHIDName(line);			// First line, Scanner A HID Name (truncated)
+					m_strScannerAName = Devices.TruncateHIDName(line);	// First line, Scanner A HID Name (truncated)
 					break;
 				case 1:
-					m_strScannerBName = Devices.TruncateHIDName(line);			// Second line, Scanner B HID Name (truncated)
+					m_strScannerBName = Devices.TruncateHIDName(line);	// Second line, Scanner B HID Name (truncated)
 					break;
 				case 2:
-					m_strScannerLocation = line;								// Third line, Scanner Location
+					m_strScannerLocation = line;						// Third line, Scanner Location
 					break;
 				case 3:
-					m_iSpeedLimit = std::stoi(line.c_str());					// Fourth line, Speed limit of location
+					m_iSpeedLimit = std::stoi(line.c_str());			// Fourth line, Speed limit of location
+					break;
 				case 4:
-					m_dbScannerDistance = std::stof(line);						// Fifth line, Distance between scanners
+					m_dbScannerDistance = std::stof(line);				// Fifth line, Distance between scanners
+					break;
+				case 5:
+					m_strDatabaseDirectory = line;						// Sixth line, Database name/directory
 					break;
 				}
 				wordNum++;	// Increment line number/word number

@@ -7,9 +7,15 @@
 #include "Clock.h"
 
 #include <windows.h>
+#include <atlstr.h>
+#using <System.Data.dll>
+#using <System.dll>
+
 #include <string>
 #include <vector>
 #include <tuple>
+
+using namespace System::Data::OleDb;
 
 class CInputManager
 {
@@ -32,6 +38,5 @@ public:
 	CRegistration pRegistration;			// To Do: Create smart pointer of Registration class
 	CDeviceProperties pDeviceProperties;	// To Do: Create smart pointer of Registration class
 	CClock pClock;
-
 };
 
