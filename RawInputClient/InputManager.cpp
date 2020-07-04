@@ -65,7 +65,7 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
             }
             else // Debugging Keyboard Input (Only Forward directions)
             {
-                pVehicle->m_strDirectionOrigin = "A";
+                pVehicle->m_strDirectionOrigin = "B";
                 pVehicle->m_dbStartTime = pClock.GetTime();
             }
 
@@ -95,15 +95,43 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
     {
         if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_fMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
+            #ifndef DEBUG
+            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
+            OutputDebugString(" Speeding \n");
+            #endif
+
             // Database call
             UpdateDatabase(vVehicle->m_strRegistration, "Speeding");
             // Delete call
             RemoveVehicle(vVehicle);
         }
     }
-    else
+    else if(vVehicle->m_strDirectionOrigin == "B")  // If started from point B (Wrong direction
     {
+        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_fMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
+        {
+            #ifndef DEBUG
+            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
+            OutputDebugString(" Speeding & Wrong Way \n");
+            #endif
 
+            // Database call
+            UpdateDatabase(vVehicle->m_strRegistration, "Speeding & Wrong Way");
+            // Delete call
+            RemoveVehicle(vVehicle);
+        }
+        else // No speed limit broken, wrong way is passed
+        {
+            #ifndef DEBUG
+            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
+            OutputDebugString(" Wrong Way \n");
+            #endif
+
+            // Database call
+            UpdateDatabase(vVehicle->m_strRegistration, "Wrong Way");
+            // Delete call
+            RemoveVehicle(vVehicle);
+        }
     }
 }
 
