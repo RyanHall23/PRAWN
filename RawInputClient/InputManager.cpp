@@ -250,14 +250,23 @@ void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string
 
         OleDbDataReader^ dbReader = oleCommand->ExecuteReader(System::Data::CommandBehavior::CloseConnection);
         System::String^ Sep = gcnew System::String('*', 60);
+
+        #ifdef _DEBUG
+        OutputDebugString("\n");
+        OutputDebugString("Database updated");
+        OutputDebugString("\n");
+        #endif
     }
     catch (System::Exception^ ex)
     {
         CString cstrException = ex->ToString();
-    #ifdef _DEBUG
+        #ifdef _DEBUG
         OutputDebugString("\n");
         OutputDebugString(cstrException);
         OutputDebugString("\n");
-    #endif
+        #endif
     }
+
+    delete oleConnection;
+    delete oleCommand;
 }
