@@ -243,18 +243,14 @@ void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string
 
     try
     {
-        // TODO: Use db locatio from DeviceProperties and make it dynamically modifiable in runtime
+        // TODO: Use db location from DeviceProperties and make it dynamically modifiable in runtime
         oleConnection = gcnew OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=..\\DrivingOffences.accdb");
         oleConnection->Open();
         oleCommand = gcnew OleDbCommand(strSQL, oleConnection);
-
-        OleDbDataReader^ dbReader = oleCommand->ExecuteReader(System::Data::CommandBehavior::CloseConnection);
-        System::String^ Sep = gcnew System::String('*', 60);
+        oleConnection->Close();
 
         #ifdef _DEBUG
-        OutputDebugString("\n");
-        OutputDebugString("Database updated");
-        OutputDebugString("\n");
+        OutputDebugString("\n Database updated \n ");
         #endif
     }
     catch (System::Exception^ ex)
