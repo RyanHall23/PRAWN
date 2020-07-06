@@ -5,22 +5,40 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RawInputClient", "RawInputClient\RawInputClient.vcxproj", "{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRAWN Viewer", "PRAWN Viewer\PRAWN Viewer.csproj", "{23233637-9749-47CB-9AA3-366E26A7853A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Debug|x64.ActiveCfg = Debug|x64
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Debug|x64.Build.0 = Debug|x64
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Debug|x86.ActiveCfg = Debug|Win32
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Debug|x86.Build.0 = Debug|Win32
+		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Release|Any CPU.ActiveCfg = Release|Win32
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Release|x64.ActiveCfg = Release|x64
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Release|x64.Build.0 = Release|x64
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Release|x86.ActiveCfg = Release|Win32
 		{6BD790C3-C254-4CBF-8DE5-3BACCBF290C1}.Release|x86.Build.0 = Release|Win32
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Debug|x64.Build.0 = Debug|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Debug|x86.Build.0 = Debug|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x64.ActiveCfg = Release|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x64.Build.0 = Release|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x86.ActiveCfg = Release|Any CPU
+		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
