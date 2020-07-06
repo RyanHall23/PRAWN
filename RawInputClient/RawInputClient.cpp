@@ -200,7 +200,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 std::string strTruncatedDeviceName = pDevices->TruncateHIDName(dvcInfo);        // Truncate device name to remove excess data
                 unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-                pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);
+                pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);           // Filter with inupt manager class
             }
         }
 
