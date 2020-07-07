@@ -14,6 +14,7 @@
 #include <fstream>
 #include <strsafe.h>
 #include <string>
+#include <array>
 
 // #define _CRTDBG_MAP_ALLOC
 #define MAX_LOADSTRING 100
@@ -26,6 +27,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
                                                                                 // TODO: Verify memory safety
 std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create smart pointer of DeviceProperties class
 std::unique_ptr<CDevices> pDevices(new CDevices());                             // Create smart pointer of Devices class
+std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties());
 
 
 // Forward declarations of functions included in this code module:
@@ -33,6 +35,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+void CreateConsole();
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -69,6 +72,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg = { 0 };
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_RAWINPUTCLIENT));
 
+    CreateConsole();
+    ShowWindow(GetActiveWindow(), SW_HIDE);
+    pDeviceProperties->ReadDeviceProperties();
+
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -83,8 +90,34 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 
+void CreateConsole()
+{
+    if (!AllocConsole()) 
+    {
+        return;
+    }
 
+    // std::cout, std::clog, std::cerr, std::cin
+    FILE* fDummy;
+    freopen_s(&fDummy, "CONIN$", "r", stdin);
+    freopen_s(&fDummy, "CONOUT$", "w", stdout);
+    freopen_s(&fDummy, "CONOUT$", "w", stderr);
+    std::cout.clear();
+    std::clog.clear();
+    std::cerr.clear();
+    std::cin.clear();
 
+    // std::wcout, std::wclog, std::wcerr, std::wcin
+    HANDLE hConOut = CreateFile(_T("CONOUT$"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hConIn = CreateFile(_T("CONIN$"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    SetStdHandle(STD_OUTPUT_HANDLE, hConOut);
+    SetStdHandle(STD_ERROR_HANDLE, hConOut);
+    SetStdHandle(STD_INPUT_HANDLE, hConIn);
+    std::wcout.clear();
+    std::wclog.clear();
+    std::wcerr.clear();
+    std::wcin.clear();
+}
 //
 //  FUNCTION: MyRegisterClass()
 //
@@ -126,7 +159,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 200, 200, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -196,11 +229,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
         {
-            if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If flag is down
+            std::string strTruncatedDeviceName = pDevices->TruncateHIDName(dvcInfo);        // Truncate device name to remove excess data
+
+            if (strTruncatedDeviceName != pDeviceProperties->m_strScannerAName &&
+                strTruncatedDeviceName != pDeviceProperties->m_strScannerBName)
             {
-                std::string strTruncatedDeviceName = pDevices->TruncateHIDName(dvcInfo);        // Truncate device name to remove excess data
+
+                std::string input;
+                std::cin >> input;
+            }
+            else if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If keyboard flag is down
+            {
                 unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
                 pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);           // Filter with inupt manager class
+
             }
         }
 

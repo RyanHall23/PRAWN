@@ -45,10 +45,10 @@ void CDeviceProperties::ReadDeviceProperties()
 				switch (wordNum)	// Switch for word tracking
 				{
 				case 0:
-					m_strScannerAName = Devices.TruncateHIDName(line);	// First line, Scanner A HID Name (truncated)
+					m_strScannerAName = line;	// First line, Scanner A HID Name (truncated)
 					break;
 				case 1:
-					m_strScannerBName = Devices.TruncateHIDName(line);	// Second line, Scanner B HID Name (truncated)
+					m_strScannerBName = line;	// Second line, Scanner B HID Name (truncated)
 					break;
 				case 2:
 					m_strScannerLocation = line;						// Third line, Scanner Location

@@ -234,24 +234,22 @@ void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string
 {
     OleDbConnection^ oleConnection = nullptr;
     OleDbCommand^ oleCommand = nullptr;
+    OleDbDataReader^ dbReader = nullptr;
 
     std::string prepSQL = ("INSERT INTO tblOffences (Registration, Location, Offence) VALUES ('" + strRegistrationPlate + "','" + pDeviceProperties.m_strScannerLocation + "','" + strOffence + "')");
-    
+
     System::String^ result = gcnew System::String(prepSQL.c_str());
     System::String^ strSQL = gcnew System::String(result);
     System::String^ sstrDatabaseDirectory = gcnew System::String(pDeviceProperties.m_strDatabaseDirectory.c_str()); // Convert std::string to System::String
 
     try
     {
-        // TODO: Use db location from DeviceProperties and make it dynamically modifiable in runtime
+        // TODO: Use db locatio from DeviceProperties and make it dynamically modifiable in runtime
         oleConnection = gcnew OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=..\\DrivingOffences.accdb");
         oleConnection->Open();
         oleCommand = gcnew OleDbCommand(strSQL, oleConnection);
-        oleConnection->Close();
 
-        #ifdef _DEBUG
-        OutputDebugString("\n Database updated \n ");
-        #endif
+        dbReader = oleCommand->ExecuteReader(System::Data::CommandBehavior::CloseConnection);
     }
     catch (System::Exception^ ex)
     {
@@ -265,4 +263,5 @@ void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string
 
     delete oleConnection;
     delete oleCommand;
+    delete dbReader;
 }
