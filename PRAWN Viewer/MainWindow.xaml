@@ -6,19 +6,18 @@
         xmlns:local="clr-namespace:PRAWN_Viewer"
         mc:Ignorable="d"
         Title="PRAWN Viewer" Height="900" Width="1600"
-        Closing="Window_Closing">
+        Closing="Window_Closing" ResizeMode="NoResize">
     <Grid>
-        <TabControl TabStripPlacement="Top">
-            <TabItem Header="Logs" Height="22" VerticalAlignment="Top">
+        <TabControl x:Name="tabNav" TabStripPlacement="Top" SelectionChanged="TabControl_SelectionChanged" >
+            <TabItem x:Name="LogsTab" Header="Logs" Height="22" VerticalAlignment="Top">
                 <DataGrid x:Name="dg_Offences" Margin="2" Background="{x:Null}" VerticalGridLinesBrush="Black" Foreground="Black"/>
             </TabItem>
-            <TabItem Header="Map" Height="22" VerticalAlignment="Top">
+            <TabItem  x:Name="MapTab" Header="Map" Height="22" VerticalAlignment="Top">
                 <WebBrowser x:Name="WbMapViewer"/>
             </TabItem>
             <TabItem Header="Settings" Height="22" Margin="1420,0,-1447,0">
                 <Button x:Name="BtnOpenDatabase" Content="Open Database" Height="25" Width="100" Margin="20,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnOpenDatabase_Click"/>
             </TabItem>
-
         </TabControl>
     </Grid>
 </Window>
