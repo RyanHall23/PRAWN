@@ -14,16 +14,12 @@ namespace PRAWN_Viewer
     {
         private OleDbConnection con;
         private OleDbDataReader rd;
+        private System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
 
         public MainWindow()
         {
             InitializeComponent();
             WbMapViewer.Navigate("https://www.google.com");
-
-            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += dispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-            dispatcherTimer.Start();
         }
 
         private void BtnOpenDatabase_Click(object sender, RoutedEventArgs e)
@@ -49,6 +45,7 @@ namespace PRAWN_Viewer
                     dg_Offences.ItemsSource = rd;
                     dg_Offences.Items.Refresh();
                     tabNav.SelectedItem = LogsTab;    // Move to logs tab
+                    CreateTimer();
                 }
             }
         }
@@ -69,8 +66,15 @@ namespace PRAWN_Viewer
             }
         }
 
+        private void CreateTimer()
+        {
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Start();
+        }
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
+            dg_Offences.ItemsSource = rd;
             dg_Offences.Items.Refresh();
         }
     }
