@@ -48,9 +48,17 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
                 pVehicle = std::get<0>(aGetVehicle);
                 iVehicleIndex = std::get<1>(aGetVehicle);
 
-                pVehicle->m_dbEndTime = pClock.GetTime();
-                pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
-                SetVehicle(pVehicle, iVehicleIndex);
+                if ((pVehicle->m_strDirectionOrigin != "A" && strShortDeviceName == pDeviceProperties.m_strScannerAName) || // Edge case : Vehicle passes back over origin scanner, not reaching both scanners
+                    (pVehicle->m_strDirectionOrigin != "B" && strShortDeviceName == pDeviceProperties.m_strScannerBName))
+                {
+                    pVehicle->m_dbEndTime = pClock.GetTime();
+                    pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
+                    SetVehicle(pVehicle, iVehicleIndex);
+                }
+                else
+                {
+                    RemoveVehicle(pVehicle);
+                }
             }
         }
         else
@@ -67,7 +75,7 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
             }
             else // Debugging Keyboard Input (Only Forward directions)
             {
-                pVehicle->m_strDirectionOrigin = "B";
+                pVehicle->m_strDirectionOrigin = "A";
                 pVehicle->m_dbStartTime = pClock.GetTime();
             }
 
@@ -173,8 +181,16 @@ void CInputManager::RemoveVehicle(CVehicle *vVehicle)
         if (vVehicle->m_strRegistration == m_vecActiveVehicles.at(i)->m_strRegistration)
         {
             // Delete safely here
+            #ifdef _DEBUG
+            OutputDebugString("\n");
+            OutputDebugString("Deleting Vehicle: ");
+            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output new vehicle
+            OutputDebugString("\n");
+            #endif
+
             delete m_vecActiveVehicles.at(i);
             m_vecActiveVehicles.erase(m_vecActiveVehicles.begin() +i);
+
         }
     }
 }
