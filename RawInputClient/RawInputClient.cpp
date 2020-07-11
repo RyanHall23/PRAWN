@@ -5,16 +5,18 @@
 #include "RawInputClient.h"
 #include "Devices.h"
 #include "InputManager.h"
+#include "MenuOutput.h"
 
 #include <windows.h>
 #include <stdlib.h>
 #include <crtdbg.h>
+#include <strsafe.h>
 
 #include <iostream>
 #include <fstream>
-#include <strsafe.h>
 #include <string>
 #include <array>
+#include <limits>
 
 // #define _CRTDBG_MAP_ALLOC
 #define MAX_LOADSTRING 100
@@ -23,12 +25,10 @@
 HINSTANCE hInst;                                // Current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
- 
                                                                                 // TODO: Verify memory safety
-std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create smart pointer of DeviceProperties class
-std::unique_ptr<CDevices> pDevices(new CDevices());                             // Create smart pointer of Devices class
-std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties());
-
+std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create safe smart pointer of InputManager class
+std::unique_ptr<CDevices> pDevices(new CDevices());                             // Create safe smart pointer of Devices class
+std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties());  // Create safe smart pointer of DeviceProperties class
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -36,6 +36,7 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void CreateConsole();
+void DisableConsoleEcho(bool bRet);
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -76,7 +77,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ShowWindow(GetActiveWindow(), SW_HIDE);
     pDeviceProperties->ReadDeviceProperties();
 
-
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -90,34 +90,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 
-void CreateConsole()
-{
-    if (!AllocConsole()) 
-    {
-        return;
-    }
-
-    // std::cout, std::clog, std::cerr, std::cin
-    FILE* fDummy;
-    freopen_s(&fDummy, "CONIN$", "r", stdin);
-    freopen_s(&fDummy, "CONOUT$", "w", stdout);
-    freopen_s(&fDummy, "CONOUT$", "w", stderr);
-    std::cout.clear();
-    std::clog.clear();
-    std::cerr.clear();
-    std::cin.clear();
-
-    // std::wcout, std::wclog, std::wcerr, std::wcin
-    HANDLE hConOut = CreateFile(_T("CONOUT$"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    HANDLE hConIn = CreateFile(_T("CONIN$"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    SetStdHandle(STD_OUTPUT_HANDLE, hConOut);
-    SetStdHandle(STD_ERROR_HANDLE, hConOut);
-    SetStdHandle(STD_INPUT_HANDLE, hConIn);
-    std::wcout.clear();
-    std::wclog.clear();
-    std::wcerr.clear();
-    std::wcin.clear();
-}
 //
 //  FUNCTION: MyRegisterClass()
 //
@@ -231,18 +203,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             std::string strTruncatedDeviceName = pDevices->TruncateHIDName(dvcInfo);        // Truncate device name to remove excess data
 
-            if (strTruncatedDeviceName != pDeviceProperties->m_strScannerAName &&
-                strTruncatedDeviceName != pDeviceProperties->m_strScannerBName)
+            if (strTruncatedDeviceName == pDeviceProperties->m_strScannerAName ||   // If device is not a registered scanner, use keyboard as a menu navigator
+                strTruncatedDeviceName == pDeviceProperties->m_strScannerBName)
             {
-
-                std::string input;
-                std::cin >> input;
+                if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If keyboard flag is down
+                {
+                    unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
+                    pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);           // Filter with inupt manager class
+                }
             }
-            else if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If keyboard flag is down
+            else    // Handle keyboard press in CLI menu
             {
-                unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-                pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);           // Filter with inupt manager class
-
+                // Placeholder code for handling presses through raw input api
+                if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If keyboard flag is down
+                {
+                    unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
+                    pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);           // Filter with inupt manager class
+                }
             }
         }
 
@@ -290,4 +267,57 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+/// <summary>
+/// Disable echo output in console window
+/// Key presses are handled using raw input API
+/// </summary>
+/// <param name="bDisable"></param>
+void DisableConsoleEcho(bool bDisable)
+{
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+
+    bDisable? mode &= ~ENABLE_ECHO_INPUT  : mode |= ENABLE_ECHO_INPUT;
+
+    SetConsoleMode(hStdin, mode);
+}
+
+/// <summary>
+/// Creates console window
+/// Disables Echo & prints copyright string
+/// </summary>
+void CreateConsole()
+{
+    if (!AllocConsole())
+    {
+        return;
+    }
+
+    // std::cout, std::clog, std::cerr, std::cin
+    FILE* fDummy;
+    freopen_s(&fDummy, "CONIN$", "r", stdin);
+    freopen_s(&fDummy, "CONOUT$", "w", stdout);
+    freopen_s(&fDummy, "CONOUT$", "w", stderr);
+    std::cout.clear();
+    std::clog.clear();
+    std::cerr.clear();
+    std::cin.clear();
+
+    // std::wcout, std::wclog, std::wcerr, std::wcin
+    HANDLE hConOut = CreateFile(_T("CONOUT$"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hConIn = CreateFile(_T("CONIN$"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    SetStdHandle(STD_OUTPUT_HANDLE, hConOut);
+    SetStdHandle(STD_ERROR_HANDLE, hConOut);
+    SetStdHandle(STD_INPUT_HANDLE, hConIn);
+    std::wcout.clear();
+    std::wclog.clear();
+    std::wcerr.clear();
+    std::wcin.clear();
+
+    DisableConsoleEcho(true);                       // disable echoing in console
+
+    std::cout << STR_COPYRIGHTNOTICE << std::endl;  // Print copyright line once console is created
 }
