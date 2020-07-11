@@ -154,6 +154,7 @@
     <ClInclude Include="DeviceProperties.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MenuOutput.h" />
     <ClInclude Include="RawInputClient.h" />
     <ClInclude Include="Registration.h" />
     <ClInclude Include="Resource.h" />
