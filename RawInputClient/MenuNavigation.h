@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <sstream>
-#include <vector>
 #include <iostream>
 
 #include <windows.h>
@@ -9,11 +7,16 @@
 class CMenuNavigation
 {
 private:
-	std::vector<char>	m_vecstrCmdMsg;				
-	std::string					m_strTempCmd;				
-	std::string					m_strCompletedCmdMsg;		
-	std::stringstream			m_ssCmdMsgBuilder;			
-	const char					m_cReturnKeyVirtualCode = 13;
+	std::string					m_strCmdMsg;
+
+	const std::string			NULLSTRING = "";
+	const std::string			OVERWRITEBLANK = "\t\t\t\t\t\t\t\t\t";
+
+	static constexpr char		m_cNewLine = '\n';
+	static constexpr char		m_cEscape = '\b';
+	static constexpr char		m_cCarriageReturn = '\r';
+
+
 
 public:
 	CMenuNavigation();
@@ -21,5 +24,11 @@ public:
 
 	// Menu navigation tools
 	std::string BuildCommand(char translatedKey);
-	void PrintMenuInput();
+	bool IsAlphaNumeric(char translatedKey);
+
+
+	void KeyInputEvent();
+	std::string ReturnInputEvent();
+	void BackspaceInputEvent();
+	void ClearInputLine();
 };
