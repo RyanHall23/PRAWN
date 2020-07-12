@@ -11,31 +11,54 @@ CRegistration::~CRegistration()
 
 }
 
-std::string CRegistration::BuildRegistration(std::string translatedKey)
+/// <summary>
+/// Build registration using registration string member
+/// </summary>
+/// <param name="translatedKey"></param>
+/// <returns></returns>
+std::string CRegistration::BuildRegistration(char translatedKey)
 {
-	if (translatedKey != m_strReturnKeyMessage)	// If key is part of the registration plate and not end of line marker
+	if (IsAlphaNumeric(translatedKey))
 	{
-		m_vecstrBuildingReg.push_back(translatedKey);	// Add character to vector to build registration
-	}
-
-	else if (translatedKey == m_strReturnKeyMessage)		// If end string marker
-	{
-		if (m_vecstrBuildingReg.capacity() > 0) // If licence plate is populated before return is hit
+		switch (translatedKey)
 		{
-			for (unsigned int i = 0; i < m_vecstrBuildingReg.size(); i++)	// Increment through size of licence plate
+		case m_cNewLine:						// Is a new line key				(\n)
+		case m_cCarriageReturn:					// Is a carraige return key			(\r)
+			if (m_strRegistration.length() > 0)	// If not empty (Something can be returned)
 			{
-				m_ssRegBuilder << m_vecstrBuildingReg.at(i);	// Build as a string
+				return ReturnInputEvent();
 			}
-
-			m_strTempReg = m_ssRegBuilder.str();		// Convert to temp string
-			m_strCompletedRegPlate = m_strTempReg;		// Assign completed registration
-
-			m_strTempReg = NULLSTRING;					// Clear temp string
-			m_ssRegBuilder.str(NULLSTRING);				// Clear strigstream
-			m_vecstrBuildingReg.clear();				// Clear vector
-
-			return m_strCompletedRegPlate;	// Return licence plate registration
+			break;
+		default:								// Is alphanumeric					(A-9)
+			m_strRegistration += std::toupper(translatedKey);		// Add to string, converting all to upper case
+			break;
 		}
 	}
-	return NULLSTRING; // Return null value if licence plate isn't built fully
+
+	return NULLSTRING;
+}
+
+/// <summary>
+/// Check if key is a valid AlphaNumeric Key, if true (Including \n && \r) return true, else special keys (,.;'[]~: etc) return false
+/// </summary>
+/// <param name="translatedKey"></param>
+/// <returns></returns>
+bool CRegistration::IsAlphaNumeric(char translatedKey)
+{
+	if (translatedKey >= 0 && translatedKey <= 255)
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// Clear string after return key event
+/// </summary>
+/// <returns></returns>
+std::string CRegistration::ReturnInputEvent()
+{
+	std::string strReturnRegistration = m_strRegistration;
+	m_strRegistration = NULLSTRING;
+	return strReturnRegistration;
 }

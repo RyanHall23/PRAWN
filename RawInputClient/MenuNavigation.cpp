@@ -9,7 +9,7 @@ CMenuNavigation::~CMenuNavigation()
 }
 
 /// <summary>
-/// Build user input command string
+/// Build user input command string member
 /// </summary>
 /// <param name="translatedKey"></param>
 /// <returns></returns>
@@ -19,7 +19,7 @@ std::string CMenuNavigation::BuildCommand(char translatedKey)
 	{
 		switch (translatedKey)
 		{
-		case m_cCarriageReturn:						// Is a carraige return key		(\r)
+		case m_cCarriageReturn:					// Is a carraige return key		(\r)
 			if (m_strCmdMsg.length() > 0)		// If not empty (Something can be returned)
 			{
 				return ReturnInputEvent();

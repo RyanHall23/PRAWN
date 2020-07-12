@@ -42,7 +42,9 @@ public:
 	CClock pClock;
 
 private:
-	int const M_I_PURGEFACTOR = 10;
-	int const M_I_THREADSLEEPSECONDS = 10;
+	int const			M_I_PURGEFACTOR = 10;
+	int const			M_I_THREADSLEEPSECONDS = 10;
+	const std::string	NULLSTRING = "";
+
 };
 

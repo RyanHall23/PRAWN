@@ -16,76 +16,68 @@ CInputManager::~CInputManager()
 /// <param name="cRecievedKey"></param>
 void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char cRecievedKey)
 {
-    // TODO: Handling and registration building
-    std::string cFilteredKey;
-    std::string strRegistrationPlate;
+    #ifdef _DEBUG
+    OutputDebugString((LPCSTR)strShortDeviceName.c_str());   // Debug output device name
+    OutputDebugString(" Key: ");
+
+    std::string strOutputInKey(1, cRecievedKey);
+
+    OutputDebugString((LPCSTR)strOutputInKey.c_str());   // Debug output entered key
+    OutputDebugString("\n");
+    #endif
+
+    std::string strRegistrationPlate = pRegistration.BuildRegistration(cRecievedKey);
+    if (strRegistrationPlate == NULLSTRING)
+    {
+        return;
+    }
+
+    #ifdef _DEBUG
+    OutputDebugString((LPCSTR)strRegistrationPlate.c_str());        // Debug output built registration 
+    OutputDebugString("\n");
+    #endif
 
     CVehicle *pVehicle = new CVehicle();
     int iVehicleIndex;
 
-    if (isdigit(cRecievedKey) || isalpha(cRecievedKey))                 // Check for valid alphanumeric key
+    pVehicle->m_strRegistration = strRegistrationPlate;
+
+    if (VehicleExists(pVehicle))
     {
-        cFilteredKey = std::toupper(cRecievedKey);                      // Convert to Upper case to avoid mixing cases
-        strRegistrationPlate = pRegistration.BuildRegistration(cFilteredKey);
-    }
-    else if (cRecievedKey == pDevices.m_cReturnKeyVirtualCode)          // Check if Return Key/End of string key has been entered
-    {
-        cFilteredKey = pDevices.m_strReturnKeyMessage;                  // Mark with '!'
-        strRegistrationPlate = pRegistration.BuildRegistration(cFilteredKey);
-
-        #ifdef _DEBUG
-        OutputDebugString((LPCSTR)strRegistrationPlate.c_str());        // Debug output built registration 
-        OutputDebugString(" ");
-        #endif
-
-        pVehicle->m_strRegistration = strRegistrationPlate;
-
-        if (VehicleExists(pVehicle))
+        auto aGetVehicle = GetVehicle(strRegistrationPlate);    // Get index and vehicle ptr
+        if (std::get<0>(aGetVehicle) != NULL)
         {
-            auto aGetVehicle = GetVehicle(strRegistrationPlate);    // Get index and vehicle ptr
-            if (std::get<0>(aGetVehicle) != NULL)
-            {
-                pVehicle = std::get<0>(aGetVehicle);
-                iVehicleIndex = std::get<1>(aGetVehicle);
+            pVehicle = std::get<0>(aGetVehicle);
+            iVehicleIndex = std::get<1>(aGetVehicle);
 
-                if ((pVehicle->m_strDirectionOrigin != "A" && strShortDeviceName == pDeviceProperties.m_strScannerAName) || // Edge case : Vehicle passes back over origin scanner, not reaching both scanners
-                    (pVehicle->m_strDirectionOrigin != "B" && strShortDeviceName == pDeviceProperties.m_strScannerBName))
-                {
-                    pVehicle->m_dbEndTime = pClock.GetTime();
-                    pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
-                    SetVehicle(pVehicle, iVehicleIndex);
-                }
-                else
-                {
-                    RemoveVehicle(pVehicle);
-                }
+            if ((pVehicle->m_strDirectionOrigin != "A" && strShortDeviceName == pDeviceProperties.m_strScannerAName) || // Edge case : Vehicle passes back over origin scanner, not reaching both scanners
+                (pVehicle->m_strDirectionOrigin != "B" && strShortDeviceName == pDeviceProperties.m_strScannerBName))
+            {
+                pVehicle->m_dbEndTime = pClock.GetTime();
+                pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
+                SetVehicle(pVehicle, iVehicleIndex);
+            }
+            else
+            {
+                RemoveVehicle(pVehicle);
             }
         }
-        else
-        {
-            if (strShortDeviceName == pDeviceProperties.m_strScannerAName)
-            {
-                pVehicle->m_strDirectionOrigin = "A";
-                pVehicle->m_dbStartTime = pClock.GetTime();
-            }
-            else if (strShortDeviceName == pDeviceProperties.m_strScannerBName)
-            {
-                pVehicle->m_strDirectionOrigin = "B";
-                pVehicle->m_dbStartTime = pClock.GetTime();
-            }
-
-            AddVehicle(pVehicle);
-        }
     }
+    else
+    {
+        if (strShortDeviceName == pDeviceProperties.m_strScannerAName)
+        {
+            pVehicle->m_strDirectionOrigin = "A";
+            pVehicle->m_dbStartTime = pClock.GetTime();
+        }
+        else if (strShortDeviceName == pDeviceProperties.m_strScannerBName)
+        {
+            pVehicle->m_strDirectionOrigin = "B";
+            pVehicle->m_dbStartTime = pClock.GetTime();
+        }
 
-
-    #ifdef _DEBUG
-    OutputDebugString((LPCSTR)strShortDeviceName.c_str());   // Debug output device name
-    OutputDebugString(" ");
-
-    OutputDebugString((LPCSTR)cFilteredKey.c_str());   // Debug output entered key
-    OutputDebugString("\n");
-    #endif
+        AddVehicle(pVehicle);
+    }
 }
 
 /// <summary>

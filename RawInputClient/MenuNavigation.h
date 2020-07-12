@@ -16,8 +16,6 @@ private:
 	static constexpr char		m_cEscape = '\b';
 	static constexpr char		m_cCarriageReturn = '\r';
 
-
-
 public:
 	CMenuNavigation();
 	~CMenuNavigation();
@@ -25,7 +23,6 @@ public:
 	// Menu navigation tools
 	std::string BuildCommand(char translatedKey);
 	bool IsAlphaNumeric(char translatedKey);
-
 
 	void KeyInputEvent();
 	std::string ReturnInputEvent();
