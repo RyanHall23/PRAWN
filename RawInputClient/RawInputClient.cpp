@@ -6,6 +6,7 @@
 #include "Devices.h"
 #include "InputManager.h"
 #include "MenuCLI.h"
+#include "MenuNavigation.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -30,6 +31,8 @@ std::unique_ptr<CInputManager> pInputManager(new CInputManager());              
 std::unique_ptr<CDevices> pDevices(new CDevices());                             // Create safe smart pointer of Devices class
 std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties());  // Create safe smart pointer of DeviceProperties class
 std::unique_ptr<CMenuCLI> pMainMenuCLI (new CMenuCLI());                        // Create safe smart pointer of MenuCLI class
+std::unique_ptr<CMenuNavigation> pMenuNavigation(new CMenuNavigation());                        // Create safe smart pointer of MenuCLI class
+
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -217,7 +220,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             else    // Handle keyboard press in CLI menu
             {
-                // Utilise MenuNavigation class here
+                if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If keyboard flag is down
+                {
+                    unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;    // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
+                    pMenuNavigation->BuildCommand(cTranslatedKey);                   // Filter with inupt manager class
+                }
             }
         }
 
