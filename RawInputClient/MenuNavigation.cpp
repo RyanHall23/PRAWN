@@ -8,64 +8,87 @@ CMenuNavigation::~CMenuNavigation()
 {
 }
 
+/// <summary>
+/// Build user input command string
+/// </summary>
+/// <param name="translatedKey"></param>
+/// <returns></returns>
 std::string CMenuNavigation::BuildCommand(char translatedKey)
 {
-	if (isdigit(translatedKey) || isalpha(translatedKey))                 // Check for valid alphanumeric key
+	if (IsAlphaNumeric(translatedKey))
 	{
-		m_vecstrCmdMsg.push_back(translatedKey);	// Add character to vector to build registration
-
-		m_strTempCmd = "";
-		for (unsigned int i = 0; i < m_vecstrCmdMsg.size(); i++)	// Increment through size of licence plate
+		switch (translatedKey)
 		{
-			m_strTempCmd += m_vecstrCmdMsg.at(i);	// Build as a string
-		}
-		PrintMenuInput();
-
-	}
-	else if (translatedKey == m_cReturnKeyVirtualCode)          // Check if Return Key/End of string key has been entered
-	{
-		if (m_vecstrCmdMsg.capacity() > 0) // If licence plate is populated before return is hit
-		{
-			for (unsigned int i = 0; i < m_vecstrCmdMsg.size(); i++)	// Increment through size of licence plate
+		case m_cCarriageReturn:						// Is a carraige return key		(\r)
+			if (m_strCmdMsg.length() > 0)		// If not empty (Something can be returned)
 			{
-				m_ssCmdMsgBuilder << m_vecstrCmdMsg.at(i);	// Build as a string
+				return ReturnInputEvent();
 			}
-
-			m_strTempCmd = m_ssCmdMsgBuilder.str();		// Convert to temp string
-			m_strCompletedCmdMsg = m_strTempCmd;		// Assign completed registration
-
-			m_strTempCmd = "";					// Clear temp string
-			m_ssCmdMsgBuilder.str("");				// Clear strigstream
-			m_vecstrCmdMsg.clear();				// Clear vector
-
-#ifdef _DEBUG
-			OutputDebugString("\n Menu Input: ");
-			OutputDebugString((LPCSTR)m_strCompletedCmdMsg.c_str());   // Debug output device name
-			OutputDebugString("\n");
-#endif
-			return m_strCompletedCmdMsg;	// Return licence plate registration
-		}
-	}
-	else if (translatedKey == '\b')
-	{
-		m_strTempCmd = "";
-		if (m_vecstrCmdMsg.size() > 0)
-		{
-
-			m_vecstrCmdMsg.erase(m_vecstrCmdMsg.begin() + m_vecstrCmdMsg.size());
-			for (unsigned int i = 0; i < m_vecstrCmdMsg.size(); i++)	// Increment through size of licence plate
+			break;
+		case m_cEscape:							// Is a backspace key				(\b)
+			if (m_strCmdMsg.length() > 0)		// If not empty (Something can be removed)
 			{
-				m_strTempCmd += m_vecstrCmdMsg.at(i);	// Build as a string
+				BackspaceInputEvent();
 			}
+			break;
+		default:								// Is alphanumeric					(A-9)
+			m_strCmdMsg += translatedKey;		// Add to string
+			KeyInputEvent();
+			break;
 		}
-		
-		PrintMenuInput();
-
 	}
-	return "";
+
+	return NULLSTRING;
 }
 
-void CMenuNavigation::PrintMenuInput()
+/// <summary>
+/// Check if key is a valid AlphaNumeric Key, if true (Including \b && \r) return true, else special keys (,.;'[]~: etc) return false
+/// </summary>
+/// <param name="translatedKey"></param>
+/// <returns></returns>
+bool CMenuNavigation::IsAlphaNumeric(char translatedKey)
 {
-	std::cout << "\r" << m_strTempCmd << std::flush;
+	if (translatedKey >= 0 && translatedKey <= 255)
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// Print text on standard key in event
+/// </summary>
+void CMenuNavigation::KeyInputEvent()
+{
+	std::cout << m_cCarriageReturn << m_strCmdMsg << std::flush;
+}
+
+/// <summary>
+/// Clear text after return key event
+/// </summary>
+std::string CMenuNavigation::ReturnInputEvent()
+{
+	ClearInputLine();
+	std::string strReturnInput = m_strCmdMsg;
+	m_strCmdMsg.resize(0);
+
+	return strReturnInput;
+}
+
+/// <summary>
+/// Print text on backspace event
+/// </summary>
+void CMenuNavigation::BackspaceInputEvent()
+{
+	ClearInputLine();
+	m_strCmdMsg.resize(m_strCmdMsg.length() - 1);
+	std::cout << m_cCarriageReturn << m_strCmdMsg << std::flush;
+}
+
+/// <summary>
+/// Clear line with \t to overwrite any input
+/// </summary>
+void CMenuNavigation::ClearInputLine()
+{
+	std::cout << m_cCarriageReturn << OVERWRITEBLANK << m_cCarriageReturn << std::flush;
 }
