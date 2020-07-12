@@ -8,7 +8,7 @@ CDeviceProperties::CDeviceProperties()
 	m_strScannerLocation	= "";
 	m_iSpeedLimit			= 0;
 	m_dbScannerDistance		= 0.00;
-	m_dbMaximumTravelTime	= 0.00;
+	m_dbOptimumTravelTime	= 0.00;
 	m_strDatabaseDirectory = "";
 }
 
@@ -80,6 +80,6 @@ void CDeviceProperties::ReadDeviceProperties()
 void CDeviceProperties::CalculateMaximumTravelTime()
 {
 	double dbSpeedLimitMetres = m_iSpeedLimit * m_dbMPHToMiles;
-	m_dbMaximumTravelTime = (m_dbScannerDistance / (dbSpeedLimitMetres / m_dbSecondsInHour));
-	m_dbMaximumTravelTime += (m_dbMaximumTravelTime / 10);
+	m_dbOptimumTravelTime = (m_dbScannerDistance / (dbSpeedLimitMetres / m_dbSecondsInHour));
+	m_dbOptimumTravelTime += (m_dbOptimumTravelTime / 10);
 }

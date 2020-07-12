@@ -5,7 +5,7 @@
 #include "RawInputClient.h"
 #include "Devices.h"
 #include "InputManager.h"
-#include "MenuOutput.h"
+#include "MenuCLI.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -29,6 +29,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
 std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create safe smart pointer of InputManager class
 std::unique_ptr<CDevices> pDevices(new CDevices());                             // Create safe smart pointer of Devices class
 std::unique_ptr<CDeviceProperties> pDeviceProperties(new CDeviceProperties());  // Create safe smart pointer of DeviceProperties class
+std::unique_ptr<CMenuCLI> pMainMenuCLI (new CMenuCLI());                        // Create safe smart pointer of MenuCLI class
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -76,6 +77,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     CreateConsole();
     ShowWindow(GetActiveWindow(), SW_HIDE);
     pDeviceProperties->ReadDeviceProperties();
+    std::thread PurgeVehicle = std::thread([=] { pInputManager->PurgeVehicles(); });
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -87,6 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
+    PurgeVehicle.join();
     return (int) msg.wParam;
 }
 
@@ -214,12 +217,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             else    // Handle keyboard press in CLI menu
             {
-                // Placeholder code for handling presses through raw input api
-                if (raw->data.keyboard.Flags == pDevices->m_sKeyDownFlag)  // If keyboard flag is down
-                {
-                    unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-                    pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);           // Filter with inupt manager class
-                }
+                // Utilise MenuNavigation class here
             }
         }
 
@@ -318,6 +316,5 @@ void CreateConsole()
     std::wcin.clear();
 
     DisableConsoleEcho(true);                       // disable echoing in console
-
-    std::cout << STR_COPYRIGHTNOTICE << std::endl;  // Print copyright line once console is created
+    pMainMenuCLI->PrintMainMenu();
 }

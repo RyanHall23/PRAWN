@@ -154,7 +154,8 @@
     <ClInclude Include="DeviceProperties.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="MenuOutput.h" />
+    <ClInclude Include="MenuCLI.h" />
+    <ClInclude Include="MenuNavigation.h" />
     <ClInclude Include="RawInputClient.h" />
     <ClInclude Include="Registration.h" />
     <ClInclude Include="Resource.h" />
@@ -166,6 +167,8 @@
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="DeviceProperties.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="MenuCLI.cpp" />
+    <ClCompile Include="MenuNavigation.cpp" />
     <ClCompile Include="RawInputClient.cpp" />
     <ClCompile Include="Devices.cpp" />
     <ClCompile Include="Registration.cpp" />

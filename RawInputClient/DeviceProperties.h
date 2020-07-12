@@ -20,7 +20,7 @@ public:
 	std::string		m_strScannerLocation;		// Scanner Location
 	int				m_iSpeedLimit;				// Speed limit at location				(MPH)
 	double			m_dbScannerDistance;		// Distance between scanners			(Metres)
-	double			m_dbMaximumTravelTime;		// Expected Travel time between scanners
+	double			m_dbOptimumTravelTime;		// Expected Travel time between scanners
 	std::string		m_strDatabaseDirectory;		// Database location on disc & name
 
 	double			m_dbSecondsInHour = 3600;	// For speed/time calculations
