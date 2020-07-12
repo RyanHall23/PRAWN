@@ -73,11 +73,6 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
                 pVehicle->m_strDirectionOrigin = "B";
                 pVehicle->m_dbStartTime = pClock.GetTime();
             }
-            else // Debugging Keyboard Input (Only Forward directions)
-            {
-                pVehicle->m_strDirectionOrigin = "A";
-                pVehicle->m_dbStartTime = pClock.GetTime();
-            }
 
             AddVehicle(pVehicle);
         }
@@ -101,7 +96,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
 {
     if (vVehicle->m_strDirectionOrigin == "A")    // If heading in right direction
     {
-        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
+        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbOptimumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
             #ifdef _DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
@@ -116,7 +111,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
     }
     else if(vVehicle->m_strDirectionOrigin == "B")  // If started from point B (Wrong direction
     {
-        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbMaximumTravelTime)    // If travel time is lower than minimum (Illegal)
+        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbOptimumTravelTime)    // If travel time is lower than minimum (Illegal)
         {
             #ifdef _DEBUG
             OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
@@ -192,6 +187,24 @@ void CInputManager::RemoveVehicle(CVehicle *vVehicle)
             m_vecActiveVehicles.erase(m_vecActiveVehicles.begin() +i);
 
         }
+    }
+}
+
+/// <summary>
+/// Called from a thread to purge vehicles that have been in the collection of active vehicles for more than 10 times their optimum travel time
+/// </summary>
+void CInputManager::PurgeVehicles()
+{
+    while (true) 
+    {
+        for (unsigned int i = 0; i < m_vecActiveVehicles.size(); ++i)
+        {
+            if (pClock.GetTime() - m_vecActiveVehicles.at(i)->m_dbStartTime > (pDeviceProperties.m_dbOptimumTravelTime * M_I_PURGEFACTOR))
+            {
+                RemoveVehicle(m_vecActiveVehicles.at(i));
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(M_I_THREADSLEEPSECONDS));
     }
 }
 

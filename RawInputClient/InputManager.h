@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <thread>
 
 using namespace System::Data::OleDb;
 
@@ -31,6 +32,7 @@ public:
 	std::tuple<CVehicle*, int> GetVehicle(std::string strRegistrationPlate);
 	void SetVehicle(CVehicle *vVehicle, int iVecIndex);
 	void UpdateDatabase(std::string strRegistrationPlate, std::string Offence);
+	void PurgeVehicles();
 
 	std::vector<CVehicle*> m_vecActiveVehicles;
 
@@ -38,5 +40,9 @@ public:
 	CRegistration pRegistration;			// To Do: Create smart pointer of Registration class
 	CDeviceProperties pDeviceProperties;	// To Do: Create smart pointer of Registration class
 	CClock pClock;
+
+private:
+	int const M_I_PURGEFACTOR = 10;
+	int const M_I_THREADSLEEPSECONDS = 10;
 };
 
