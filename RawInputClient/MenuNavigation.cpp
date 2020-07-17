@@ -2,6 +2,7 @@
 
 CMenuNavigation::CMenuNavigation()
 {
+
 }
 
 CMenuNavigation::~CMenuNavigation()
@@ -12,8 +13,7 @@ CMenuNavigation::~CMenuNavigation()
 /// Build user input command string member
 /// </summary>
 /// <param name="translatedKey"></param>
-/// <returns></returns>
-std::string CMenuNavigation::BuildCommand(char translatedKey)
+void CMenuNavigation::BuildCommand(char translatedKey)
 {
 	if (IsAlphaNumeric(translatedKey))
 	{
@@ -22,7 +22,8 @@ std::string CMenuNavigation::BuildCommand(char translatedKey)
 		case m_cCarriageReturn:					// Is a carraige return key		(\r)
 			if (m_strCmdMsg.length() > 0)		// If not empty (Something can be returned)
 			{
-				return ReturnInputEvent();
+				ProcessCommand(ReturnInputEvent());
+				return;
 			}
 			break;
 		case m_cEscape:							// Is a backspace key				(\b)
@@ -37,8 +38,22 @@ std::string CMenuNavigation::BuildCommand(char translatedKey)
 			break;
 		}
 	}
+}
 
-	return NULLSTRING;
+/// <summary>
+/// Process user input command
+/// </summary>
+void CMenuNavigation::ProcessCommand(std::string cmdMsg)
+{
+	if (currentMenuPosition == MainMenu)
+	{
+		if (cmdMsg == "1")
+		{
+			m_pMenuCli.PrintScannerDevicesMenu();
+			currentMenuPosition = ScannerDevicesMenu;
+
+		}
+	}
 }
 
 /// <summary>
