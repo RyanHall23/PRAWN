@@ -292,7 +292,7 @@ void DisableConsoleEcho(bool bDisable)
 
 /// <summary>
 /// Creates console window
-/// Disables Echo & prints copyright string
+/// Disables Echo & prints main menu
 /// </summary>
 void CreateConsole()
 {
