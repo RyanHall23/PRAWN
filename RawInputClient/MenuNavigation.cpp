@@ -45,14 +45,25 @@ void CMenuNavigation::BuildCommand(char translatedKey)
 /// </summary>
 void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 {
-	if (currentMenuPosition == MainMenu)
-	{
-		if (cmdMsg == "1")
-		{
-			m_pMenuCli.PrintScannerDevicesMenu();
-			currentMenuPosition = ScannerDevicesMenu;
+	int iMenuInput = ConvertMenuInputToInt(cmdMsg); // Convert to int to handle menu key presses directly with enum literals
 
+
+	switch (currentMenuPosition)
+	{
+	case MainMenu:
+		if (iMenuInput == ScannerDevicesMenu)
+		{
+			m_pMenuCli.PrintScannerDevicesMenu();		// Print Scanner devices menu
+			currentMenuPosition = ScannerDevicesMenu;	// Set current menu position to ScannerDevicesMenu
 		}
+		break;
+	case ScannerDevicesMenu:
+		if (iMenuInput == MainMenu)
+		{
+			m_pMenuCli.PrintMainMenu();		// Print Main Menu
+			currentMenuPosition = MainMenu; // Set current menu position to MainMenu
+		}
+		break;
 	}
 }
 
@@ -68,6 +79,23 @@ bool CMenuNavigation::IsAlphaNumeric(char translatedKey)
 		return true;
 	}
 	return false;
+}
+
+int CMenuNavigation::ConvertMenuInputToInt(std::string cmdMsg)
+{
+	try 
+	{
+		int validInput;
+		validInput = std::stoi(cmdMsg);
+		if (validInput > 0);
+		{
+			return validInput;
+		}
+	}
+	catch (const std::exception& e) 
+	{
+		return -1;	// Return
+	}
 }
 
 /// <summary>
