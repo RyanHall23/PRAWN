@@ -23,7 +23,7 @@ private:
 
 	enum MenuPosition
 	{
-		MainMenu = 1,
+		MainMenu = 0,
 		ScannerDevicesMenu,
 	};
 
@@ -37,7 +37,7 @@ public:
 	void BuildCommand(char translatedKey);
 	void ProcessCommand(std::string cmdMsg);
 	bool IsAlphaNumeric(char translatedKey);
-
+	int  ConvertMenuInputToInt(std::string cmdMsg);
 
 	void KeyInputEvent();
 	std::string ReturnInputEvent();

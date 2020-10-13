@@ -22,6 +22,7 @@ private:
 	const std::string M_STR_EDITSCANNERDEVICES1 = "		1.	Add Scanner\n";
 	const std::string M_STR_EDITSCANNERDEVICES2 = "		2.	Remove Scanner\n";
 	const std::string M_STR_EDITSCANNERDEVICES3 = "		3.	Change Scanner\n";
+	const std::string M_STR_EDITSCANNERDEVICES4 = "		0.	Return to Main Menu\n";
 
 
 	// Text formatting strings 
