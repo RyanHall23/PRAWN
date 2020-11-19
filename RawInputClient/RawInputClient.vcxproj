@@ -153,26 +153,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Clock.h" />
-    <ClInclude Include="DeviceProperties.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MenuCLI.h" />
     <ClInclude Include="MenuNavigation.h" />
+    <ClInclude Include="Persistence.h" />
     <ClInclude Include="RawInputClient.h" />
     <ClInclude Include="Registration.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Devices.h" />
     <ClInclude Include="Vehicle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="DeviceProperties.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MenuCLI.cpp" />
     <ClCompile Include="MenuNavigation.cpp" />
+    <ClCompile Include="Persistence.cpp" />
     <ClCompile Include="RawInputClient.cpp" />
-    <ClCompile Include="Devices.cpp" />
     <ClCompile Include="Registration.cpp" />
     <ClCompile Include="Vehicle.cpp" />
   </ItemGroup>
