@@ -21,13 +21,33 @@ private:
 
 	CMenuCLI m_pMenuCli;
 
-	enum MenuPosition
+	enum MainMenuPosition
 	{
 		MainMenu = 0,
 		ScannerDevicesMenu,
+		SpeedAndLocationMenu,
+		DatabaseLocationMenu
 	};
 
-	MenuPosition currentMenuPosition = MainMenu;
+	enum ScannerDevicesPosition
+	{
+		returnFromDevices = 0,
+		AddScannerDevicesMenu,
+		ChangeScannerDevicesMenu,
+		RemoveScannerDevicesMenu
+	};
+
+	enum SpeedAndLocationMenuPosition
+	{
+		SpeedAndLocationMainMenu = 0
+	};
+
+	enum DatabaseLocationMenuPosition
+	{
+		DatabaseLocatioMainMenu = 0
+	};
+
+	MainMenuPosition mainMenuPosition = MainMenu;
 
 public:
 	CMenuNavigation();

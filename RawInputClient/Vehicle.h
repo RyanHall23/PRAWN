@@ -8,7 +8,7 @@ public:
 	~CVehicle();
 
 	std::string m_strRegistration;
-	std::string m_strDirectionOrigin;
+	int			m_iDirectionOrigin;
 	double		m_dbStartTime;
 	double		m_dbEndTime;
 	double		m_dbTotalTravelTime;
