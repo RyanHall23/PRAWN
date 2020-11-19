@@ -2,11 +2,12 @@
 
 CInputManager::CInputManager()
 {
-    pDeviceProperties.ReadDeviceProperties();
+
 }
 
 CInputManager::~CInputManager()
 {
+
 }
 
 /// <summary>
@@ -32,6 +33,13 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
         return;
     }
 
+    // Get current device index in vector for comparisons, and stop errors if device is not registered
+    int iCurrentDeviceIndex;
+    if (iCurrentDeviceIndex = CheckScannerIsRegistered(strShortDeviceName) < 0)
+    {
+        return;
+    }
+
     #ifdef _DEBUG
     OutputDebugString((LPCSTR)strRegistrationPlate.c_str());        // Debug output built registration 
     OutputDebugString("\n");
@@ -42,6 +50,8 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
 
     pVehicle->m_strRegistration = strRegistrationPlate;
 
+    std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
     if (VehicleExists(pVehicle))
     {
         auto aGetVehicle = GetVehicle(strRegistrationPlate);    // Get index and vehicle ptr
@@ -50,8 +60,7 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
             pVehicle = std::get<0>(aGetVehicle);
             iVehicleIndex = std::get<1>(aGetVehicle);
 
-            if ((pVehicle->m_strDirectionOrigin != "A" && strShortDeviceName == pDeviceProperties.m_strScannerAName) || // Edge case : Vehicle passes back over origin scanner, not reaching both scanners
-                (pVehicle->m_strDirectionOrigin != "B" && strShortDeviceName == pDeviceProperties.m_strScannerBName))
+            if (pVehicle->m_iDirectionOrigin != iCurrentDeviceIndex)// Edge case : Vehicle passes back over origin scanner, not reaching both scanners
             {
                 pVehicle->m_dbEndTime = pClock.GetTime();
                 pVehicle->m_dbTotalTravelTime = pVehicle->m_dbEndTime - pVehicle->m_dbStartTime;
@@ -65,19 +74,39 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
     }
     else
     {
-        if (strShortDeviceName == pDeviceProperties.m_strScannerAName)
+        for (int i = 0; i < pPersistence->m_vecstrSelectedDevices.size(); ++i)
         {
-            pVehicle->m_strDirectionOrigin = "A";
-            pVehicle->m_dbStartTime = pClock.GetTime();
-        }
-        else if (strShortDeviceName == pDeviceProperties.m_strScannerBName)
-        {
-            pVehicle->m_strDirectionOrigin = "B";
-            pVehicle->m_dbStartTime = pClock.GetTime();
+            if (pPersistence->m_vecstrSelectedDevices.at(i) == strShortDeviceName)
+            {
+                pVehicle->m_iDirectionOrigin = i;
+                pVehicle->m_dbStartTime = pClock.GetTime();
+            }
         }
 
         AddVehicle(pVehicle);
     }
+}
+
+/// <summary>
+/// Checks if a scanner is registered (Edge case of an incorrect device passing the raw input check) to stop any collection overflow errors
+/// Also gets the index of the scanner (origin key) for comparisons
+/// </summary>
+/// <param name="strShortDeviceName"></param>
+/// <returns></returns>
+int CInputManager::CheckScannerIsRegistered(std::string strShortDeviceName)
+{
+    std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
+    for (int i = 0; i < pPersistence->m_vecstrSelectedDevices.size(); ++i)
+    {
+        if (pPersistence->m_vecstrSelectedDevices.at(i) == strShortDeviceName)
+        {
+            return i;
+        }
+    }
+
+    // If scanner is not found in registered devices
+    return -1;
 }
 
 /// <summary>
@@ -86,48 +115,48 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
 /// <param name="vVehicle"></param>
 void CInputManager::CheckVehicle(CVehicle *vVehicle)
 {
-    if (vVehicle->m_strDirectionOrigin == "A")    // If heading in right direction
-    {
-        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbOptimumTravelTime)    // If travel time is lower than minimum (Illegal)
-        {
-            #ifdef _DEBUG
-            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
-            OutputDebugString(" Speeding \n");
-            #endif
-
-            // Database call
-            UpdateDatabase(vVehicle->m_strRegistration, "Speeding");
-            // Delete call
-            RemoveVehicle(vVehicle);
-        }
-    }
-    else if(vVehicle->m_strDirectionOrigin == "B")  // If started from point B (Wrong direction
-    {
-        if (vVehicle->m_dbTotalTravelTime < pDeviceProperties.m_dbOptimumTravelTime)    // If travel time is lower than minimum (Illegal)
-        {
-            #ifdef _DEBUG
-            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
-            OutputDebugString(" Speeding & Wrong Way \n");
-            #endif
-
-            // Database call
-            UpdateDatabase(vVehicle->m_strRegistration, "Speeding & Wrong Way");
-            // Delete call
-            RemoveVehicle(vVehicle);
-        }
-        else // No speed limit broken, wrong way is passed
-        {
-            #ifdef _DEBUG
-            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
-            OutputDebugString(" Wrong Way \n");
-            #endif
-
-            // Database call
-            UpdateDatabase(vVehicle->m_strRegistration, "Wrong Way");
-            // Delete call
-            RemoveVehicle(vVehicle);
-        }
-    }
+//    if (vVehicle->m_strDirectionOrigin == "A")    // If heading in right direction
+//    {
+//        if (vVehicle->m_dbTotalTravelTime < pDevices.m_dbOptimumTravelTime)    // If travel time is lower than minimum (Illegal)
+//        {
+//            #ifdef _DEBUG
+//            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
+//            OutputDebugString(" Speeding \n");
+//            #endif
+//
+//            // Database call
+//            UpdateDatabase(vVehicle->m_strRegistration, "Speeding");
+//            // Delete call
+//            RemoveVehicle(vVehicle);
+//        }
+//    }
+//    else if(vVehicle->m_strDirectionOrigin == "B")  // If started from point B (Wrong direction
+//    {
+//        if (vVehicle->m_dbTotalTravelTime < pDevices.m_dbOptimumTravelTime)    // If travel time is lower than minimum (Illegal)
+//        {
+//            #ifdef _DEBUG
+//            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
+//            OutputDebugString(" Speeding & Wrong Way \n");
+//            #endif
+//
+//            // Database call
+//            UpdateDatabase(vVehicle->m_strRegistration, "Speeding & Wrong Way");
+//            // Delete call
+//            RemoveVehicle(vVehicle);
+//        }
+//        else // No speed limit broken, wrong way is passed
+//        {
+//            #ifdef _DEBUG
+//            OutputDebugString((LPCSTR)vVehicle->m_strRegistration.c_str());   // Debug output device name
+//            OutputDebugString(" Wrong Way \n");
+//            #endif
+//
+//            // Database call
+//            UpdateDatabase(vVehicle->m_strRegistration, "Wrong Way");
+//            // Delete call
+//            RemoveVehicle(vVehicle);
+//        }
+//    }
 }
 
 /// <summary>
@@ -187,11 +216,13 @@ void CInputManager::RemoveVehicle(CVehicle *vVehicle)
 /// </summary>
 void CInputManager::PurgeVehicles()
 {
+    std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
     while (true) 
     {
         for (unsigned int i = 0; i < m_vecActiveVehicles.size(); ++i)
         {
-            if (pClock.GetTime() - m_vecActiveVehicles.at(i)->m_dbStartTime > (pDeviceProperties.m_dbOptimumTravelTime * M_I_PURGEFACTOR))
+            if (pClock.GetTime() - m_vecActiveVehicles.at(i)->m_dbStartTime > (pPersistence->m_dbOptimumTravelTime * M_I_PURGEFACTOR))
             {
                 RemoveVehicle(m_vecActiveVehicles.at(i));
             }
@@ -242,7 +273,7 @@ std::tuple<CVehicle*, int> CInputManager::GetVehicle(std::string strRegistration
 void CInputManager::SetVehicle(CVehicle *vVehicle, int iVecIndex)
 {
     m_vecActiveVehicles.at(iVecIndex) = vVehicle;
-    CheckVehicle(vVehicle);
+    //CheckVehicle(vVehicle);
 }
 
 /// <summary>
@@ -256,12 +287,14 @@ void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string
     OleDbConnection^ oleConnection = nullptr;
     OleDbCommand^ oleCommand = nullptr;
     OleDbDataReader^ dbReader = nullptr;
+    std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
 
-    std::string prepSQL = ("INSERT INTO tblOffences (Registration, Location, Offence) VALUES ('" + strRegistrationPlate + "','" + pDeviceProperties.m_strScannerLocation + "','" + strOffence + "')");
+
+    std::string prepSQL = ("INSERT INTO tblOffences (Registration, Location, Offence) VALUES ('" + strRegistrationPlate + "','" + pPersistence->m_strScannerLocation + "','" + strOffence + "')");
 
     System::String^ result = gcnew System::String(prepSQL.c_str());
     System::String^ strSQL = gcnew System::String(result);
-    System::String^ sstrDatabaseDirectory = gcnew System::String(pDeviceProperties.m_strDatabaseDirectory.c_str()); // Convert std::string to System::String
+    System::String^ sstrDatabaseDirectory = gcnew System::String(pPersistence->m_strDatabaseDirectory.c_str()); // Convert std::string to System::String
 
     try
     {
