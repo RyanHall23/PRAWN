@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Registration.h"
-#include "DeviceProperties.h"
-#include "Devices.h"
+#include "Persistence.h"
 #include "Vehicle.h"
 #include "Clock.h"
 
@@ -26,6 +25,7 @@ public:
 	~CInputManager();
 
 	void InputDetected(std::string deviceName, unsigned char RecievedKey);
+	int CheckScannerIsRegistered(std::string strShortDeviceName);
 	void CheckVehicle(CVehicle *vVehicle);
 	void AddVehicle(CVehicle *vVehicle);
 	void RemoveVehicle(CVehicle *vVehicle);
@@ -37,15 +37,11 @@ public:
 
 	std::vector<CVehicle*> m_vecActiveVehicles;
 
-	CDevices pDevices;						// To Do: Create smart pointer of Devices class
-	CRegistration pRegistration;			// To Do: Create smart pointer of Registration class
-	CDeviceProperties pDeviceProperties;	// To Do: Create smart pointer of Registration class
+	CRegistration pRegistration;					// To Do: Create smart pointer of Registration class
 	CClock pClock;
 
 private:
 	int const			M_I_PURGEFACTOR = 10;
 	int const			M_I_THREADSLEEPSECONDS = 10;
 	const std::string	NULLSTRING = "";
-
 };
-

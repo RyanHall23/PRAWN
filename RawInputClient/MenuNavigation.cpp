@@ -41,30 +41,44 @@ void CMenuNavigation::BuildCommand(char translatedKey)
 }
 
 /// <summary>
-/// Process user input command
+/// Process user input command and navigate the CLI menus
 /// </summary>
 void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 {
 	int iMenuInput = ConvertMenuInputToInt(cmdMsg); // Convert to int to handle menu key presses directly with enum literals
 
-
-	switch (currentMenuPosition)
+	if (mainMenuPosition == MainMenu)
 	{
-	case MainMenu:
-		if (iMenuInput == ScannerDevicesMenu)
+		switch (iMenuInput)
 		{
-			m_pMenuCli.PrintScannerDevicesMenu();		// Print Scanner devices menu
-			currentMenuPosition = ScannerDevicesMenu;	// Set current menu position to ScannerDevicesMenu
+		case ScannerDevicesMenu:
+				m_pMenuCli.PrintScannerDevicesMenu();		// Print Scanner devices menu
+				mainMenuPosition = ScannerDevicesMenu;		// Set current menu position to ScannerDevicesMenu
+			break;
+		case SpeedAndLocationMenu:
+			break;
+		case DatabaseLocationMenu:
+			break;
 		}
-		break;
-	case ScannerDevicesMenu:
-		if (iMenuInput == MainMenu)
-		{
-			m_pMenuCli.PrintMainMenu();		// Print Main Menu
-			currentMenuPosition = MainMenu; // Set current menu position to MainMenu
-		}
-		break;
 	}
+	else if (mainMenuPosition == ScannerDevicesMenu)
+	{
+		switch (iMenuInput)
+		{
+		case AddScannerDevicesMenu:
+			m_pMenuCli.PrintAddScannerDevicesMenu();		// Print Scanner devices menu
+			break;
+		case ChangeScannerDevicesMenu:
+			break;
+		case RemoveScannerDevicesMenu:
+			break;
+		case returnFromDevices:
+			m_pMenuCli.PrintMainMenu();		// Print Scanner devices menu
+			mainMenuPosition = MainMenu;		// Set current menu position to ScannerDevicesMenu
+		}
+	}
+
+
 }
 
 /// <summary>
@@ -81,6 +95,11 @@ bool CMenuNavigation::IsAlphaNumeric(char translatedKey)
 	return false;
 }
 
+/// <summary>
+/// Converts menu option inputs "2" to allow for easy switch case statements 
+/// </summary>
+/// <param name="cmdMsg"></param>
+/// <returns></returns>
 int CMenuNavigation::ConvertMenuInputToInt(std::string cmdMsg)
 {
 	try 
