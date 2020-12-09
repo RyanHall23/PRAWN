@@ -2,7 +2,7 @@
 
 // Static initialisations
 std::vector<std::string>	CPersistence::DeviceProperties::m_vecstrAllDevices;			// Vector of all availible devices
-std::vector<std::string>	CPersistence::DeviceProperties::m_vecstrSelectedDevices;	// Vector of selected devices in loop
+std::vector<std::string>	CPersistence::DeviceProperties::m_vecstrRegisteredDevices;	// Vector of selected devices in loop
 std::string					CPersistence::DeviceProperties::m_strScannerLocation;		// Scanner Location
 int							CPersistence::DeviceProperties::m_iSpeedLimit;				// Speed limit at location				(MPH)
 double						CPersistence::DeviceProperties::m_dbScannerDistance;		// Distance between scanners			(Metres)
@@ -67,12 +67,12 @@ std::unique_ptr<CPersistence::DeviceProperties> CPersistence::ReadSettings()
 						if (line == "")
 						{
 							std::getline(file, line);
-							newConfig->m_vecstrSelectedDevices.push_back(line);
+							newConfig->m_vecstrRegisteredDevices.push_back(line);
 							std::getline(file, line);
 						}
 						else
 						{
-							newConfig->m_vecstrSelectedDevices.push_back(line);
+							newConfig->m_vecstrRegisteredDevices.push_back(line);
 						}
 					}
 				}

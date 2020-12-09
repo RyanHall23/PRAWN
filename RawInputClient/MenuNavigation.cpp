@@ -19,7 +19,7 @@ void CMenuNavigation::BuildCommand(char translatedKey)
 	{
 		switch (translatedKey)
 		{
-		case m_cCarriageReturn:					// Is a carraige return key		(\r)
+		case m_cCarriageReturn:					// Is a carraige return key			(\r)
 			if (m_strCmdMsg.length() > 0)		// If not empty (Something can be returned)
 			{
 				ProcessCommand(ReturnInputEvent());
@@ -45,38 +45,110 @@ void CMenuNavigation::BuildCommand(char translatedKey)
 /// </summary>
 void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 {
-	int iMenuInput = ConvertMenuInputToInt(cmdMsg); // Convert to int to handle menu key presses directly with enum literals
+	int iMenuInput = ConvertMenuInputToInt(cmdMsg);	// Convert to int to handle menu key presses directly with enum literals
 
-	if (mainMenuPosition == MainMenu)
+
+	if (mmCurrentMenu == MainMenu)
 	{
-		switch (iMenuInput)
+		if (iMenuInput == 1)	// Edit Scanners screen entry
 		{
-		case ScannerDevicesMenu:
-				m_pMenuCli.PrintScannerDevicesMenu();		// Print Scanner devices menu
-				mainMenuPosition = ScannerDevicesMenu;		// Set current menu position to ScannerDevicesMenu
-			break;
-		case SpeedAndLocationMenu:
-			break;
-		case DatabaseLocationMenu:
-			break;
+			m_pMenuCli.PrintScannersMainMenu();		// Print Scanner devices menu
+			mmCurrentMenu = ScannersMain;				// Set current menu position to ScannerDevicesMenu
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 2)	// Edit Speed & Location screen entry
+		{
+			// TODO Add speed/location screen and change enum
+
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 3)	// Edit Database screen entry
+		{
+			// TODO Add Database screen and change enum
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
-	else if (mainMenuPosition == ScannerDevicesMenu)
+
+#pragma region Scanner Navigation
+	if (mmCurrentMenu == ScannersMain)
 	{
-		switch (iMenuInput)
+		if (iMenuInput == 0)	// Edit Scanners screen entry
 		{
-		case AddScannerDevicesMenu:
-			m_pMenuCli.PrintAddScannerDevicesMenu();		// Print Scanner devices menu
-			break;
-		case ChangeScannerDevicesMenu:
-			break;
-		case RemoveScannerDevicesMenu:
-			break;
-		case returnFromDevices:
-			m_pMenuCli.PrintMainMenu();		// Print Scanner devices menu
-			mainMenuPosition = MainMenu;		// Set current menu position to ScannerDevicesMenu
+			m_pMenuCli.PrintMainMenu();					// Print Main Menu
+			mmCurrentMenu = MainMenu;					// Set current menu position to MainMenu
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 1)	// Edit Scanners screen entry
+		{
+			m_pMenuCli.PrintAddScannersDeviceMenu();	// Print Add Scanner devices menu
+			mmCurrentMenu = ScannersAdd;				// Set current menu position to ScannersAdd
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 2)	// Edit Scanners screen entry
+		{
+			m_pMenuCli.PrintRemoveScannersDeviceMenu();	// Print Remove Scanner devices menu
+			mmCurrentMenu = ScannersRemove;				// Set current menu position to ScannersRemove
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 3)	// Edit Scanners screen entry
+		{
+			m_pMenuCli.PrintOverwriteScannersDeviceMenu();	// Print Overwrite Scanner devices menu
+			mmCurrentMenu = ScannersOverwrite;			// Set current menu position to ScannersOverwrite
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
+
+	if (mmCurrentMenu == ScannersAdd)
+	{
+		if (iMenuInput == 0)	// Return to Scanners Main
+		{
+			m_pMenuCli.PrintScannersMainMenu();		// Print Scanner devices menu
+			mmCurrentMenu = ScannersMain;				// Set current menu position to ScannerMain Menu
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput > 0)
+		{
+			// TODO add logic to scanners on selected index
+		}
+	}
+
+	if (mmCurrentMenu == ScannersRemove)
+	{
+		if (iMenuInput == 0)	// Return to Scanners Main
+		{
+			m_pMenuCli.PrintScannersMainMenu();		// Print Scanner devices menu
+			mmCurrentMenu = ScannersMain;				// Set current menu position to ScannerMain Menu
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput > 0)
+		{
+			// TODO remove logic to scanners on selected index
+		}
+	}
+
+	if (mmCurrentMenu == ScannersOverwrite)
+	{
+		if (iMenuInput == 0)	// Return to Scanners Main
+		{
+			m_pMenuCli.PrintScannersMainMenu();		// Print Scanner devices menu
+			mmCurrentMenu = ScannersMain;				// Set current menu position to ScannerMain Menu
+			return;										// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput > 0)
+		{
+			// TODO overwrite logic to scanners on selected index (combine remove->add?)
+		}
+	}
+#pragma endregion
+
 
 
 }
@@ -96,7 +168,7 @@ bool CMenuNavigation::IsAlphaNumeric(char translatedKey)
 }
 
 /// <summary>
-/// Converts menu option inputs "2" to allow for easy switch case statements 
+/// Converts menu option inputs from string to integerm for comparison statements
 /// </summary>
 /// <param name="cmdMsg"></param>
 /// <returns></returns>
@@ -106,15 +178,17 @@ int CMenuNavigation::ConvertMenuInputToInt(std::string cmdMsg)
 	{
 		int validInput;
 		validInput = std::stoi(cmdMsg);
-		if (validInput > 0);
+		if (validInput >= 0)
 		{
 			return validInput;
 		}
 	}
-	catch (const std::exception& e) 
+	catch (const std::exception e) 
 	{
 		return -1;	// Return
 	}
+
+	return -1;		// Return
 }
 
 /// <summary>

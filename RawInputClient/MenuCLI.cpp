@@ -1,7 +1,7 @@
 #include "MenuCLI.h"
 
 /// <summary>
-/// Prints the main menu splash screen in the console
+/// Print the main menu splash screen in the console
 /// </summary>
 void CMenuCLI::PrintMainMenu()
 {
@@ -10,23 +10,51 @@ void CMenuCLI::PrintMainMenu()
 }
 
 /// <summary>
-/// Prints the scanner devices menu in the console
+/// Print the Scanner main menu in the console
 /// </summary>
-void CMenuCLI::PrintScannerDevicesMenu()
+void CMenuCLI::PrintScannersMainMenu()
 {
 	ClearMenu();
 	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITSCANNERDEVICES1 << M_STR_EDITSCANNERDEVICES2 << M_STR_EDITSCANNERDEVICES3 << M_NEWLINE << M_STR_EDITSCANNERDEVICES4 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
 }
 
-void CMenuCLI::PrintAddScannerDevicesMenu()
+/// <summary>
+/// Print add scanner menu to the console
+/// </summary>
+void CMenuCLI::PrintAddScannersDeviceMenu()
 {
 	ClearMenu();
 	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_ADDSCANNERDEVICES1 << M_NEWLINE;
-	PrintScannerDeviceList();
+	PrintAllConnectedDeviceList();
 	std::cout << M_NEWLINE << M_STR_ADDSCANNERDEVICES2 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
 }
 
-void CMenuCLI::PrintScannerDeviceList()
+/// <summary>
+/// Print remove scanner menu to the console
+/// </summary>
+void CMenuCLI::PrintRemoveScannersDeviceMenu()
+{
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_REMOVESCANNERDEVICES1 << M_NEWLINE;
+	PrintRegisteredDeviceList();
+	std::cout << M_NEWLINE << M_STR_ADDSCANNERDEVICES2 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+}
+
+/// <summary>
+/// Print Overwrite scanner menu to the console
+/// </summary>
+void CMenuCLI::PrintOverwriteScannersDeviceMenu()
+{
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_OVERWRITESCANNERDEVICES1 << M_NEWLINE;
+	PrintRegisteredDeviceList();
+	std::cout << M_NEWLINE << M_STR_ADDSCANNERDEVICES2 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+}
+
+/// <summary>
+/// Print the all connected devices scanner device list
+/// </summary>
+void CMenuCLI::PrintAllConnectedDeviceList()
 {
 	// Don't clear this menu as it is printed under a titled screen
 	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
@@ -34,6 +62,20 @@ void CMenuCLI::PrintScannerDeviceList()
 	for (int i = 0; i < pPersistence->m_vecstrAllDevices.size(); ++i)
 	{
 		std::cout << M_TABLINE << M_TABLINE << i+1 << ".	" << pPersistence->m_vecstrAllDevices.at(i) << M_NEWLINE;
+	}
+}
+
+/// <summary>
+/// Print all registered devices
+/// </summary>
+void CMenuCLI::PrintRegisteredDeviceList()
+{
+	// Don't clear this menu as it is printed under a titled screen
+	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
+	for (int i = 0; i < pPersistence->m_vecstrRegisteredDevices.size(); ++i)
+	{
+		std::cout << M_TABLINE << M_TABLINE << i + 1 << ".	" << pPersistence->m_vecstrRegisteredDevices.at(i) << M_NEWLINE;
 	}
 }
 

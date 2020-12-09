@@ -270,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(dvcInfo);    // Truncate device name to remove excess data
 
-            if (std::find(pDeviceSettings->m_vecstrSelectedDevices.begin(), pDeviceSettings->m_vecstrSelectedDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrSelectedDevices.end())
+            if (std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrRegisteredDevices.end())
             {
                 if (raw->data.keyboard.Flags == pPersistence->m_sKeyDownFlag)               // If keyboard flag is down
                 {

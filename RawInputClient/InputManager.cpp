@@ -74,9 +74,9 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
     }
     else
     {
-        for (int i = 0; i < pPersistence->m_vecstrSelectedDevices.size(); ++i)
+        for (int i = 0; i < pPersistence->m_vecstrRegisteredDevices.size(); ++i)
         {
-            if (pPersistence->m_vecstrSelectedDevices.at(i) == strShortDeviceName)
+            if (pPersistence->m_vecstrRegisteredDevices.at(i) == strShortDeviceName)
             {
                 pVehicle->m_iDirectionOrigin = i;
                 pVehicle->m_dbStartTime = pClock.GetTime();
@@ -97,9 +97,9 @@ int CInputManager::CheckScannerIsRegistered(std::string strShortDeviceName)
 {
     std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
 
-    for (int i = 0; i < pPersistence->m_vecstrSelectedDevices.size(); ++i)
+    for (int i = 0; i < pPersistence->m_vecstrRegisteredDevices.size(); ++i)
     {
-        if (pPersistence->m_vecstrSelectedDevices.at(i) == strShortDeviceName)
+        if (pPersistence->m_vecstrRegisteredDevices.at(i) == strShortDeviceName)
         {
             return i;
         }
