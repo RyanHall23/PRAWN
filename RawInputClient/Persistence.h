@@ -5,10 +5,7 @@
 #include <tuple>
 #include <iostream>
 #include <fstream>
-
 #include <windows.h>
-
-#include "Devices.h"
 
 class CPersistence
 {
@@ -29,7 +26,7 @@ public:
 struct CPersistence::DeviceProperties
 {
 	static std::vector<std::string> m_vecstrAllDevices;			// Vector of all availible devices
-	static std::vector<std::string> m_vecstrSelectedDevices;	// Vector of selected devices in loop
+	static std::vector<std::string> m_vecstrRegisteredDevices;	// Vector of selected devices in loop
 	static std::string				m_strScannerLocation;		// Scanner Location
 	static int						m_iSpeedLimit;				// Speed limit at location				(MPH)
 	static double					m_dbScannerDistance;		// Distance between scanners			(Metres)

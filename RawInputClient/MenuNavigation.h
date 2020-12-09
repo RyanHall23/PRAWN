@@ -23,31 +23,25 @@ private:
 
 	enum MainMenuPosition
 	{
-		MainMenu = 0,
-		ScannerDevicesMenu,
-		SpeedAndLocationMenu,
-		DatabaseLocationMenu
+		MainMenu			= 0,	
+
+		// Scanners Menu Navigation group
+		ScannersMain		= 10,	
+		ScannersAdd			= 11,
+		ScannersRemove		= 12,
+		ScannersOverwrite	= 13,
+
+		// Speed & Location Menu Navigation group
+		SpeedLocationMenu	= 20, 	
+		EditSpeed			= 21,
+		EditActualLocation	= 22,
+
+		// Database Menu Navigation group
+		DatabaseMenu		= 30,	
+		EditDBLocation		= 31
 	};
 
-	enum ScannerDevicesPosition
-	{
-		returnFromDevices = 0,
-		AddScannerDevicesMenu,
-		ChangeScannerDevicesMenu,
-		RemoveScannerDevicesMenu
-	};
-
-	enum SpeedAndLocationMenuPosition
-	{
-		SpeedAndLocationMainMenu = 0
-	};
-
-	enum DatabaseLocationMenuPosition
-	{
-		DatabaseLocatioMainMenu = 0
-	};
-
-	MainMenuPosition mainMenuPosition = MainMenu;
+	MainMenuPosition mmCurrentMenu = MainMenu;
 
 public:
 	CMenuNavigation();
