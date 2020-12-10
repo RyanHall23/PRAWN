@@ -21,8 +21,11 @@ private:
 	static constexpr char		m_cCarriageReturn = '\r';
 
 	const int					m_iDeviceListOffset = 1;
-
 	static std::string			m_strNavigationDevice;	// For storing device name that is navigating menu
+
+	BOOL m_bOverwriteDeregistered = FALSE;
+	int indexOldDevice = 0;
+	int indexNewDevice = 0;
 
 	CPersistence	m_pPersistence;
 	CMenuCLI		m_pMenuCli;
