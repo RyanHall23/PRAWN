@@ -35,6 +35,8 @@ private:
 	const std::string M_STR_ADDSCANNERDEVICES2 = "		0.	Return to Main Menu\n";
 
 
+	const std::string M_STR_CANNOTADDDEVICEERROR1 = "		Cannot REGSITER the NAVIGATION device or a device that has already been REGISTERED\n";
+
 	// Text formatting strings 
 	const std::string M_NEWLINE = "\n";
 	const std::string M_TABLINE = "\t";
@@ -51,4 +53,6 @@ public:
 	void PrintAddScannersDeviceMenu();			// Prints add scanner devices menu
 	void PrintRemoveScannersDeviceMenu();		// Prints remove scanner devices menu
 	void PrintOverwriteScannersDeviceMenu();	// Prints overwrite scanner devices menu
+
+	void PrintCannotAddDeviceError();
 };
