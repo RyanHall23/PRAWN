@@ -44,8 +44,7 @@ private:
 		EditActualLocation	= 22,
 
 		// Database Menu Navigation group
-		DatabaseMenu		= 30,	
-		EditDBLocation		= 31
+		EditDBDirectoryMenu = 30
 	};
 
 	MainMenuPosition mmCurrentMenu = MainMenu;

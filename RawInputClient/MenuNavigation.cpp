@@ -76,14 +76,15 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 
 		if (iMenuInput == 2)	// Edit Speed & Location screen entry
 		{
-			// TODO Add speed/location screen and change enum
-
+			m_pMenuCli.PrintSpeedLocMainMenu();
+			mmCurrentMenu = SpeedLocationMenu;
 			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 3)	// Edit Database screen entry
 		{
-			// TODO Add Database screen and change enum
+			m_pMenuCli.PrintDBDirNameMenu();
+			mmCurrentMenu = EditDBDirectoryMenu;
 			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
@@ -131,8 +132,6 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 
 		if (iMenuInput > 0 && m_pDevProp.m_vecstrAllDevices.size() > 0 && iMenuInput <= m_pDevProp.m_vecstrAllDevices.size())
 		{
-			//TODO Stop user registering typing device
-
 			if (m_pDevProp.RegisterDevice(iMenuInput - m_iDeviceListOffset, GetNavigationDevice()))
 			{
 				m_pMenuCli.PrintAddScannersDeviceMenu();						// Print Add Scanner devices menu
@@ -180,6 +179,95 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 	}
 #pragma endregion
 
+#pragma region Speed & Location Navigation
+	if (mmCurrentMenu == SpeedLocationMenu)
+	{
+		if (iMenuInput == 0)	// Edit Scanners screen entry
+		{
+			m_pMenuCli.PrintMainMenu();						// Print Main Menu
+			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 1)	// Edit  screen entry
+		{
+			m_pMenuCli.PrintEditSpeedMenu();				// Print Add  devices menu
+			mmCurrentMenu = EditSpeed;						// Set current menu position to 
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput == 2)	// Edit  screen entry
+		{
+			m_pMenuCli.PrintEditLocationMenu();				// Print Remove  devices menu
+			mmCurrentMenu = EditActualLocation;				// Set current menu position to 
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+	}
+
+	if (mmCurrentMenu == EditSpeed)
+	{
+		if (iMenuInput == 0)	// Return to Scanners Main
+		{
+			m_pMenuCli.PrintSpeedLocMainMenu();
+			mmCurrentMenu = SpeedLocationMenu;
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+
+		if (iMenuInput > 0 )
+		{
+			if (m_pDevProp.OverwriteSpeedLimit(iMenuInput))
+			{
+				m_pMenuCli.PrintEditSpeedMenu();
+				m_pPersistence.SaveSettings(m_pDevProp);
+				return;
+			}
+			else
+			{
+				m_pMenuCli.PrintCannotEditSpeedError();
+				return;
+			}
+			return;
+		}
+	}
+
+	if (mmCurrentMenu == EditActualLocation)
+	{
+		if (iMenuInput == 0)	// Return to Scanners Main
+		{
+			m_pMenuCli.PrintSpeedLocMainMenu();
+			mmCurrentMenu = SpeedLocationMenu;
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+		else
+		{
+			m_pDevProp.OverwriteLocation(cmdMsg);
+			m_pPersistence.SaveSettings(m_pDevProp);
+			m_pMenuCli.PrintEditLocationMenu();
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+	}
+
+
+#pragma endregion
+
+#pragma region Database Navigation
+	if (EditDBDirectoryMenu)
+	{
+		if (iMenuInput == 0)	// Return to Scanners Main
+		{
+			m_pMenuCli.PrintMainMenu();						// Print Main Menu
+			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+		else
+		{
+			m_pDevProp.OverwriteDatabaseDirectory(cmdMsg);
+			m_pPersistence.SaveSettings(m_pDevProp);
+			m_pMenuCli.PrintDBDirNameMenu();
+			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+	}
+#pragma endregion
 
 
 }

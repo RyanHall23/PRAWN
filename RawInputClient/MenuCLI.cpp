@@ -61,6 +61,57 @@ void CMenuCLI::PrintCannotAddDeviceError()
 }
 
 /// <summary>
+/// Print main speed & location menu
+/// </summary>
+void CMenuCLI::PrintSpeedLocMainMenu()
+{
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITSPEEDLOC1 << M_STR_EDITSPEEDLOC2 << M_NEWLINE << M_STR_EDITSPEEDLOC3 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+}
+
+/// <summary>
+/// Print edit speed menu screen
+/// </summary>
+void CMenuCLI::PrintEditSpeedMenu()
+{
+	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITSPEED1 << M_NEWLINE << M_STR_EDITSPEED2 << pPersistence->m_iSpeedLimit << M_NEWLINE << M_NEWLINE << M_STR_EDITSPEEDLOC3 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+}
+
+/// <summary>
+/// Print edit phyiscal location menu screen
+/// </summary>
+void CMenuCLI::PrintEditLocationMenu()
+{
+	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITLOC1 << M_NEWLINE << M_STR_EDITLOC2 << pPersistence->m_strScannerLocation << M_NEWLINE << M_NEWLINE << M_STR_EDITSPEEDLOC3 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+}
+
+/// <summary>
+/// Prints an error if the new speed edit is too high of a legal speed limit
+/// </summary>
+void CMenuCLI::PrintCannotEditSpeedError()
+{
+	PrintEditSpeedMenu();
+	std::cout << M_NEWLINE << M_STR_CANNOTEDITSPEEDERROR1 << M_NEWLINE;
+}
+
+/// <summary>
+/// Print edit DB name / location menu screen
+/// </summary>
+void CMenuCLI::PrintDBDirNameMenu()
+{
+	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITDBDIR1 << M_NEWLINE << M_STR_EDITDBDIR2 << pPersistence->m_strDatabaseDirectory << M_NEWLINE << M_NEWLINE << M_STR_EDITDBDIR3 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+}
+
+/// <summary>
 /// Print the all connected devices scanner device list
 /// </summary>
 void CMenuCLI::PrintAllConnectedDeviceList()
