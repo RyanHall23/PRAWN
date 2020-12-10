@@ -1,4 +1,5 @@
 #include "MenuNavigation.h"
+
 std::string		CMenuNavigation::m_strNavigationDevice = "";	// Initialise static for storing device name that is navigating menu
 
 CMenuNavigation::CMenuNavigation()
@@ -70,21 +71,21 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintScannersMainMenu();				// Print Scanner devices Main Menu
 			mmCurrentMenu = ScannersMain;					// Set current menu position to ScannerDevices Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 2)	// Edit Speed & Location screen entry
 		{
 			m_pMenuCli.PrintSpeedLocMainMenu();				// Print SpeedLoc Main menu
 			mmCurrentMenu = SpeedLocationMenu;				// Set current menu position to Speed&Location Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 3)	// Edit Database screen entry
 		{
 			m_pMenuCli.PrintDBDirNameMenu();				// Print 
 			mmCurrentMenu = EditDBDirectoryMenu;			// Set current menu position to DB Directory Edit Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
@@ -95,28 +96,28 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintMainMenu();						// Print Main Menu
 			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 1)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintAddScannersDeviceMenu();		// Print Add Scanner devices menu
 			mmCurrentMenu = ScannersAdd;					// Set current menu position to ScannersAdd
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 2)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintRemoveScannersDeviceMenu();		// Print Remove Scanner devices menu
 			mmCurrentMenu = ScannersRemove;					// Set current menu position to ScannersRemove
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 3)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintOverwriteScannersDeviceMenu();	// Print Overwrite Scanner devices menu
 			mmCurrentMenu = ScannersOverwrite;				// Set current menu position to ScannersOverwrite
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
@@ -126,7 +127,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintScannersMainMenu();				// Print Scanner devices menu
 			mmCurrentMenu = ScannersMain;					// Set current menu position to ScannerMain Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput > 0 && m_pDevProp.m_vecstrAllDevices.size() > 0 
@@ -141,7 +142,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 			{
 				m_pMenuCli.PrintCannotAddDeviceError();	// Print error
 			}
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
@@ -151,7 +152,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintScannersMainMenu();				// Print Scanner devices menu
 			mmCurrentMenu = ScannersMain;					// Set current menu position to ScannerMain Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput > 0 && m_pDevProp.m_vecstrRegisteredDevices.size() > 0 && iMenuInput <= m_pDevProp.m_vecstrRegisteredDevices.size())
@@ -159,7 +160,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 			m_pDevProp.DeregisterDevice(iMenuInput - m_iDeviceListOffset);	// DEREGISTER device, removing offset for print output
 			m_pMenuCli.PrintRemoveScannersDeviceMenu();						// Print Remove Scanner devices menu for refresh
 			m_pPersistence.SaveSettings(m_pDevProp);						// Save setting into .txt File
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
@@ -170,7 +171,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 			m_pMenuCli.PrintScannersMainMenu();					// Print Scanner devices menu
 			mmCurrentMenu = ScannersMain;						// Set current menu position to ScannerMain Menu
 			m_bOverwriteDeregistered = FALSE;					// Reset Deregistered state to FALSE before overwriting
-			return;					// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput > 0 && m_pDevProp.m_vecstrRegisteredDevices.size() > 0 && iMenuInput <= m_pDevProp.m_vecstrRegisteredDevices.size() && !m_bOverwriteDeregistered)
@@ -178,7 +179,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 			indexOldDevice = iMenuInput - m_iDeviceListOffset;	//	Store index of device to overwrite (minus the offset) 
 			m_pMenuCli.PrintAddScannersDeviceMenu();			// Repurpose the Add Scanners device menu once device to be overwritten has been chosen
 			m_bOverwriteDeregistered = TRUE;					// Set Deregistered state to TRUE, ready to be overwritten
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 		else if (iMenuInput > 0 && m_pDevProp.m_vecstrAllDevices.size() > 0 && iMenuInput <= m_pDevProp.m_vecstrAllDevices.size() && m_bOverwriteDeregistered)
 		{
@@ -200,7 +201,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 				return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 			}
 		}
-		return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		return;								// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 	}
 #pragma endregion
 
@@ -211,21 +212,21 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintMainMenu();						// Print Main Menu
 			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 1)	// Edit Speed Menu
 		{
 			m_pMenuCli.PrintEditSpeedMenu();				// Print Edit Speed Menu
 			mmCurrentMenu = EditSpeed;						// Set current menu position to EditSpeed Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 2)	// Edit Location Menu
 		{
 			m_pMenuCli.PrintEditLocationMenu();				// Print Edit Location Menu
 			mmCurrentMenu = EditActualLocation;				// Set current menu position to EditLocation Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
@@ -235,7 +236,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintSpeedLocMainMenu();				// Print SpeedLocation Main Menu
 			mmCurrentMenu = SpeedLocationMenu;				// Set current menu position to SpeedLocation Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput > 0 )
@@ -261,14 +262,14 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintSpeedLocMainMenu();				// Print SpeedLocation Main Menu
 			mmCurrentMenu = SpeedLocationMenu;				// Set current menu position to SpeedLocation Menu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 		else
 		{
 			m_pDevProp.OverwriteLocation(cmdMsg);			// Use string input type to overwrite actual location
 			m_pMenuCli.PrintEditLocationMenu();				// Reprint menu to update text with new setting
 			m_pPersistence.SaveSettings(m_pDevProp);		// Save setting into .txt File
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
@@ -282,14 +283,14 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintMainMenu();						// Print Main Menu
 			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 		else
 		{
 			m_pDevProp.OverwriteDatabaseDirectory(cmdMsg);	// Use cmdMsg to overwrite database directory with string
 			m_pMenuCli.PrintDBDirNameMenu();				// Reperint database directory with new directory setting
 			m_pPersistence.SaveSettings(m_pDevProp);		// Save setting into .txt File
-			return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 #pragma endregion
