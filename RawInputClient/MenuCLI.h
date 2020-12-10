@@ -46,7 +46,7 @@ private:
 	const std::string M_STR_EDITLOC1	= "		Enter the desired LOCATION \n";
 	const std::string M_STR_EDITLOC2	= "		Location is currently set to:	";
 
-	const std::string M_STR_CANNOTEDITSPEEDERROR1 = "		Speed is too HIGH, it MUST be UNDER 120 MPH\n";
+	const std::string M_STR_CANNOTEDITSPEEDERROR1 = "		Speed is too HIGH, it MUST be UNDER 120 MPH and ABOVE 0 MPH\n";
 
 	// Edit Database Location/Filename Strings
 	const std::string M_STR_EDITDBDIR1 = "		Enter the desired LOCATION and NAME for the DATABASE \n";

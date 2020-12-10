@@ -77,9 +77,34 @@ struct CPersistence::DeviceProperties
 		m_vecstrRegisteredDevices.erase(m_vecstrRegisteredDevices.begin() + index);	// Remove from registered devices vector
 	}
 
+	/// <summary>
+	/// Replace registered device in its vector position
+	/// </summary>
+	/// <param name="indexOldDevice"></param>
+	/// <param name="indexNewDevice"></param>
+	/// <param name="strNavigationDevice"></param>
+	/// <returns></returns>
+	BOOL OverwriteDevice(int indexOldDevice, int indexNewDevice, std::string strNavigationDevice)
+	{
+		if (strNavigationDevice == m_vecstrAllDevices.at(indexNewDevice) ||
+			std::find(m_vecstrRegisteredDevices.begin(), m_vecstrRegisteredDevices.end(), m_vecstrAllDevices.at(indexNewDevice)) != m_vecstrRegisteredDevices.end())
+		{
+			return FALSE;
+		}
+
+		m_vecstrRegisteredDevices.at(indexOldDevice) = m_vecstrAllDevices.at(indexNewDevice);
+
+		return TRUE;
+	}
+
+	/// <summary>
+	/// Overwrite speed limit directly
+	/// </summary>
+	/// <param name="newSpeed"></param>
+	/// <returns></returns>
 	BOOL OverwriteSpeedLimit(int newSpeed)
 	{
-		if (newSpeed >= 120)
+		if (newSpeed >= 120 && newSpeed > 0)
 		{
 			return FALSE;
 		}
@@ -88,11 +113,19 @@ struct CPersistence::DeviceProperties
 		return TRUE;
 	}
 
+	/// <summary>
+	/// Overwrite Location of PRAWN setup
+	/// </summary>
+	/// <param name="newLocation"></param>
 	void OverwriteLocation(std::string newLocation)
 	{
 		m_strScannerLocation = newLocation;
 	}
 
+	/// <summary>
+	/// Overwrite database directory location
+	/// </summary>
+	/// <param name="newDirectory"></param>
 	void OverwriteDatabaseDirectory(std::string newDirectory)
 	{
 		m_strDatabaseDirectory = newDirectory;
