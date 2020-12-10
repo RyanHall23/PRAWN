@@ -52,6 +52,15 @@ void CMenuCLI::PrintOverwriteScannersDeviceMenu()
 }
 
 /// <summary>
+/// Reprint the scanners device menu with a suitable warning for not being able to add the selected device
+/// </summary>
+void CMenuCLI::PrintCannotAddDeviceError()
+{
+	PrintAddScannersDeviceMenu();
+	std::cout << M_NEWLINE << M_STR_CANNOTADDDEVICEERROR1 << M_NEWLINE;
+}
+
+/// <summary>
 /// Print the all connected devices scanner device list
 /// </summary>
 void CMenuCLI::PrintAllConnectedDeviceList()

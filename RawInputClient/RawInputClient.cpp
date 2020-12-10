@@ -284,6 +284,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 {
                     unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;           // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
                     pMenuNavigation->BuildCommand(cTranslatedKey);                          // Filter with inupt manager class
+                    pMenuNavigation->RegisterNavigationDevice(strTruncatedDeviceName);
                 }
             }
         }

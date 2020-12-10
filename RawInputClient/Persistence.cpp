@@ -19,13 +19,17 @@ CPersistence::~CPersistence()
 
 }
 
+/// <summary>
+/// Reads the settings file and stores them in static variables for use
+/// </summary>
+/// <returns></returns>
 std::unique_ptr<CPersistence::DeviceProperties> CPersistence::ReadSettings()
 {
-	std::ifstream file("devices.txt");	// File to read device property data
+	std::ifstream configFile("devices.txt");	// File to read device property data
 
 	std::unique_ptr<CPersistence::DeviceProperties> newConfig(new CPersistence::DeviceProperties());
 
-	if (file.fail())	// Error handling
+	if (configFile.fail())	// Error handling
 	{
 		#ifdef _DEBUG
 		OutputDebugString(TEXT("File failed to open | Not Found \n"));		// Debug output File not found/failed to open
@@ -41,7 +45,7 @@ std::unique_ptr<CPersistence::DeviceProperties> CPersistence::ReadSettings()
 		int wordNum = 0;							// Tracks current word being read from file
 		std::string line;							// Stored line from file text
 
-		while (std::getline(file, line))			// While lines to read are availible
+		while (std::getline(configFile, line))			// While lines to read are availible
 		{
 			if (line != "")							// If line isn't blank, safeguarding the stoi function
 			{
@@ -61,14 +65,14 @@ std::unique_ptr<CPersistence::DeviceProperties> CPersistence::ReadSettings()
 					break;
 				case 4:																// Fifth line, Process amount of scanners connected
 					int temp = std::stoi(line.c_str());		// Get amount of devices number
-					std::getline(file, line);				// Increment line number
+					std::getline(configFile, line);				// Increment line number
 					for (int i = 0; i < temp; ++i)			// For as l
 					{
 						if (line == "")
 						{
-							std::getline(file, line);
+							std::getline(configFile, line);
 							newConfig->m_vecstrRegisteredDevices.push_back(line);
-							std::getline(file, line);
+							std::getline(configFile, line);
 						}
 						else
 						{
@@ -82,16 +86,47 @@ std::unique_ptr<CPersistence::DeviceProperties> CPersistence::ReadSettings()
 
 
 		newConfig->CalculateMaximumTravelTime();
-		file.close();	// Close file once completed
+		configFile.close();	// Close file once completed
 		return newConfig;
 	}
 }
 
- //void CPersistence::SaveSettings(CDevices devicesConfig)
- //{
+ /// <summary>
+ /// Saves the static variables into a file with the same format as the reader
+ /// </summary>
+ /// <param name="devicesConfig"></param>
+ void CPersistence::SaveSettings(DeviceProperties devicesConfig)
+ {
+	 CPersistence::DeviceProperties newConfig;
 
- //}
+	 std::ofstream configFile("devices.txt");
+	 if (configFile.is_open())
+	 {
+		 configFile << newConfig.m_iSpeedLimit;
+		 configFile << SETTINGSPACER;
+		 configFile << newConfig.m_dbScannerDistance;
+		 configFile << SETTINGSPACER;
+		 configFile << newConfig.m_strScannerLocation;
+		 configFile << SETTINGSPACER;
+		 configFile << newConfig.m_strDatabaseDirectory;
+		 configFile << SETTINGSPACER;
+		 configFile << newConfig.m_vecstrRegisteredDevices.size();
+		 configFile << SETTINGSPACER;
 
+		 for (int i = 0; i < newConfig.m_vecstrRegisteredDevices.size();++i)
+		 {
+			 configFile << newConfig.m_vecstrRegisteredDevices.at(i);
+			 configFile << SETTINGSPACER;
+		 }
+		 configFile.close();
+	 }
+ }
+
+/// <summary>
+/// Truncates the standard PID//VID device name to trim non-permanent values
+/// </summary>
+/// <param name="deviceName"></param>
+/// <returns></returns>
 std::string CPersistence::TruncateHIDName(std::string deviceName)
 {
 	if (deviceName.size() < 19)	// Valid keyboard length including PID, VID & Bus data

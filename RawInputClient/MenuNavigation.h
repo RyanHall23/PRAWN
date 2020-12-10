@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MenuCLI.h"
+#include "Persistence.h"
 
 #include <string>
 #include <iostream>
@@ -19,7 +20,13 @@ private:
 	static constexpr char		m_cEscape = '\b';
 	static constexpr char		m_cCarriageReturn = '\r';
 
-	CMenuCLI m_pMenuCli;
+	const int					m_iDeviceListOffset = 1;
+
+	static std::string			m_strNavigationDevice;	// For storing device name that is navigating menu
+
+	CPersistence	m_pPersistence;
+	CMenuCLI		m_pMenuCli;
+	CPersistence::DeviceProperties	m_pDevProp;
 
 	enum MainMenuPosition
 	{
@@ -46,6 +53,9 @@ private:
 public:
 	CMenuNavigation();
 	~CMenuNavigation();
+
+	void RegisterNavigationDevice(std::string strDeviceName);
+	std::string GetNavigationDevice();
 
 	// Menu navigation tools
 	void BuildCommand(char translatedKey);
