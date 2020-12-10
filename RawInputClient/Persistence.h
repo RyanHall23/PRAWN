@@ -76,4 +76,25 @@ struct CPersistence::DeviceProperties
 	{
 		m_vecstrRegisteredDevices.erase(m_vecstrRegisteredDevices.begin() + index);	// Remove from registered devices vector
 	}
+
+	BOOL OverwriteSpeedLimit(int newSpeed)
+	{
+		if (newSpeed >= 120)
+		{
+			return FALSE;
+		}
+
+		m_iSpeedLimit = newSpeed;
+		return TRUE;
+	}
+
+	void OverwriteLocation(std::string newLocation)
+	{
+		m_strScannerLocation = newLocation;
+	}
+
+	void OverwriteDatabaseDirectory(std::string newDirectory)
+	{
+		m_strDatabaseDirectory = newDirectory;
+	}
 };

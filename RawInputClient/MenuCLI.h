@@ -1,7 +1,7 @@
 #pragma once
+
 #include <string>
 #include <iostream>
-
 #include <windows.h>
 
 #include "Persistence.h"
@@ -12,7 +12,6 @@ private:
 
 	// Strings definitions
 	// Used to display menu item constants
-
 
 	// Main Menu strings
 	const std::string M_STR_SOFTWARETITLE		= "				PRAWN - Highway Regulation and Enforcement\n";
@@ -33,9 +32,29 @@ private:
 	const std::string M_STR_OVERWRITESCANNERDEVICES1	= "		Select an index of the device to OVERWRITE it\n";
 
 	const std::string M_STR_ADDSCANNERDEVICES2 = "		0.	Return to Main Menu\n";
-
-
 	const std::string M_STR_CANNOTADDDEVICEERROR1 = "		Cannot REGSITER the NAVIGATION device or a device that has already been REGISTERED\n";
+
+	// Edit Speed & Location Menu String
+	const std::string M_STR_EDITSPEEDLOC1 = "		1.	Edit Speed\n";
+	const std::string M_STR_EDITSPEEDLOC2 = "		2.	Edit Location\n";
+	const std::string M_STR_EDITSPEEDLOC3 = "		0.	Return to Main Menu\n";
+
+	// Edit Speed, Location strings
+	const std::string M_STR_EDITSPEED1	= "		Enter the desired SPEED in MPH \n";
+	const std::string M_STR_EDITSPEED2	= "		Speed is currently set to:	";
+
+	const std::string M_STR_EDITLOC1	= "		Enter the desired LOCATION \n";
+	const std::string M_STR_EDITLOC2	= "		Location is currently set to:	";
+
+	const std::string M_STR_CANNOTEDITSPEEDERROR1 = "		Speed is too HIGH, it MUST be UNDER 120 MPH\n";
+
+	// Edit Database Location/Filename Strings
+	const std::string M_STR_EDITDBDIR1 = "		Enter the desired LOCATION and NAME for the DATABASE \n";
+	const std::string M_STR_EDITDBDIR2 = "		Database Directory is currently set to:	";
+	const std::string M_STR_EDITDBDIR3 = "		0.	Return to Main Menu\n";
+
+
+
 
 	// Text formatting strings 
 	const std::string M_NEWLINE = "\n";
@@ -55,4 +74,16 @@ public:
 	void PrintOverwriteScannersDeviceMenu();	// Prints overwrite scanner devices menu
 
 	void PrintCannotAddDeviceError();
+
+	// Speed Location Menu Nav Group
+
+	void PrintSpeedLocMainMenu();
+	void PrintEditSpeedMenu();
+	void PrintEditLocationMenu();
+
+	void PrintCannotEditSpeedError();
+
+	// Database Location/Name Menu Nav Group
+
+	void PrintDBDirNameMenu();
 };
