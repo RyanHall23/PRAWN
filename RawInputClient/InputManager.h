@@ -1,20 +1,19 @@
 #pragma once
 
+#include <windows.h>
+#include <atlstr.h>
+#include <string>
+#include <vector>
+#include <tuple>
+#include <thread>
+
 #include "Registration.h"
 #include "Persistence.h"
 #include "Vehicle.h"
 #include "Clock.h"
 
-#include <windows.h>
-#include <atlstr.h>
-
 #using <System.Data.dll>
 #using <System.dll>
-
-#include <string>
-#include <vector>
-#include <tuple>
-#include <thread>
 
 using namespace System::Data::OleDb;
 

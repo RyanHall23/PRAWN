@@ -1,12 +1,11 @@
 #pragma once
 
-#include "MenuCLI.h"
-#include "Persistence.h"
-
 #include <string>
 #include <iostream>
-
 #include <windows.h>
+
+#include "MenuCLI.h"
+#include "Persistence.h"
 
 class CMenuNavigation
 {
