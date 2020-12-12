@@ -63,7 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    RAWINPUTDEVICE rID[1];
+    RAWINPUTDEVICE rID[1] = {};
 
     rID[0].usUsagePage = 0x01;
     rID[0].usUsage = 0x06; // HID keyboard
@@ -104,7 +104,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+    WNDCLASSEXW wcex = {};
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -158,6 +158,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  PURPOSE: Processes messages for the main window.
 //
 //  WM_COMMAND  - process the application menu
+//  WM_INPUT    - Interecpts the HID input message
 //  WM_PAINT    - Paint the main window
 //  WM_DESTROY  - post a quit message and return
 //
@@ -219,27 +220,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" DeviceList Num Devices %d \n"), uiNumDevices);
 
-        if (SUCCEEDED(hResult))
+        TCHAR* psDwType[] = 
         {
-            // OutputDebugString(szTempOutput);            
-        }
-        else 
-        {
-            // TODO: write error handler
-        }
-
-
-        TCHAR* psDwType[] = {
             TEXT("RIM_TYPEMOUSE"),
             TEXT("RIM_TYPEKEYBOARD"),
             TEXT("RIM_TYPEHID")
         };
 
-        for (unsigned int i = 0; i < uiNumDevices; i++) {
-            UINT             cbDataSize = 1000;
-            TCHAR* pType = TEXT("Unknown");
-            RID_DEVICE_INFO  DevInfo = { 0 };
-            char             pData[1000] = { 0 };
+        for (unsigned int i = 0; i < uiNumDevices; i++) 
+        {
+            UINT                cbDataSize  = 1000;
+            TCHAR*              pType       = TEXT("Unknown");
+            RID_DEVICE_INFO     DevInfo     = { 0 };
+            char                pData[1000] = { 0 };
 
             // For each device get the device name and then the device information
             cbDataSize = sizeof(pData);
@@ -253,39 +246,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Device Name = %s\n"), pData);
             if (SUCCEEDED(hResult))
             {
-                // OutputDebugString(szTempOutput);
                 std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(pData);
                 if (std::find(pDeviceSettings->m_vecstrAllDevices.begin(), pDeviceSettings->m_vecstrAllDevices.end(), strTruncatedDeviceName) == pDeviceSettings->m_vecstrAllDevices.end())
                 {
                     pDeviceSettings->m_vecstrAllDevices.push_back(strTruncatedDeviceName);
                 }
             }
-            else 
-            {
-                // TODO: write error handler
-            }
-
         }
-        if (raw->header.dwType == RIM_TYPEKEYBOARD) // If keyboard input event
+        if (raw->header.dwType == RIM_TYPEKEYBOARD && raw->data.keyboard.Flags == pPersistence->m_sKeyDownFlag) // If keyboard input event && is in down state to prevent double inputs being processed
         {
             std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(dvcInfo);    // Truncate device name to remove excess data
+            unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
 
-            if (std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrRegisteredDevices.end())
+            if (std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrRegisteredDevices.end())    // Check to see if it is a registered scanner device
             {
-                if (raw->data.keyboard.Flags == pPersistence->m_sKeyDownFlag)               // If keyboard flag is down
-                {
-                    unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;           // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-                    pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey); // Filter with inupt manager class
-                }
+                pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);   // Filter with inupt manager class
             }
             else    // Handle keyboard press in CLI menu
             {
-                if (raw->data.keyboard.Flags == pPersistence->m_sKeyDownFlag)               // If keyboard flag is down
-                {
-                    unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;           // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-                    pMenuNavigation->BuildCommand(cTranslatedKey);                          // Filter with inupt manager class
-                    pMenuNavigation->RegisterNavigationDevice(strTruncatedDeviceName);
-                }
+                pMenuNavigation->BuildCommand(cTranslatedKey);                          // Build input commands with menu navigator class
+                pMenuNavigation->RegisterNavigationDevice(strTruncatedDeviceName);      // Call to register keyboard that user is typing in CLI with, to avoid registering it as a scanner device
             }
         }
 
