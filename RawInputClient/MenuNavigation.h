@@ -23,8 +23,8 @@ private:
 	static std::string			m_strNavigationDevice;	// For storing device name that is navigating menu
 
 	BOOL m_bOverwriteDeregistered = FALSE;
-	int indexOldDevice = 0;
-	int indexNewDevice = 0;
+	int m_indexOldDevice = 0;
+	int m_indexNewDevice = 0;
 
 	CPersistence	m_pPersistence;
 	CMenuCLI		m_pMenuCli;
