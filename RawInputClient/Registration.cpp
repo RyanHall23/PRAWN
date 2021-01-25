@@ -16,7 +16,7 @@ CRegistration::~CRegistration()
 /// </summary>
 /// <param name="translatedKey"></param>
 /// <returns></returns>
-std::string CRegistration::BuildRegistration(char translatedKey)
+std::string CRegistration::BuildRegistration(char translatedKey, int deviceIindex)
 {
 	if (IsAlphaNumeric(translatedKey))
 	{

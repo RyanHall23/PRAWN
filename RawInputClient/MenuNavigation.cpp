@@ -176,23 +176,23 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 
 		if (iMenuInput > 0 && m_pDevProp.m_vecstrRegisteredDevices.size() > 0 && iMenuInput <= m_pDevProp.m_vecstrRegisteredDevices.size() && !m_bOverwriteDeregistered)
 		{
-			indexOldDevice = iMenuInput - m_iDeviceListOffset;	//	Store index of device to overwrite (minus the offset) 
+			m_indexOldDevice = iMenuInput - m_iDeviceListOffset;	//	Store index of device to overwrite (minus the offset) 
 			m_pMenuCli.PrintAddScannersDeviceMenu();			// Repurpose the Add Scanners device menu once device to be overwritten has been chosen
 			m_bOverwriteDeregistered = TRUE;					// Set Deregistered state to TRUE, ready to be overwritten
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 		else if (iMenuInput > 0 && m_pDevProp.m_vecstrAllDevices.size() > 0 && iMenuInput <= m_pDevProp.m_vecstrAllDevices.size() && m_bOverwriteDeregistered)
 		{
-			indexNewDevice = iMenuInput - m_iDeviceListOffset;	// Store index of device to write (minus the offset) 
+			m_indexNewDevice = iMenuInput - m_iDeviceListOffset;	// Store index of device to write (minus the offset) 
 
-			if (m_pDevProp.OverwriteDevice(indexOldDevice, indexNewDevice, GetNavigationDevice()))
+			if (m_pDevProp.OverwriteDevice(m_indexOldDevice, m_indexNewDevice, GetNavigationDevice()))
 			{
 				m_pMenuCli.PrintOverwriteScannersDeviceMenu();	// Reprint overwrite menu with new settings
 				m_pPersistence.SaveSettings(m_pDevProp);		// Save setting into .txt File
 
 				m_bOverwriteDeregistered = FALSE;				// Reset Deregistered state to FALSE before overwriting
-				indexNewDevice = 0;								// Reset old new index
-				indexOldDevice = 0;								// Reset old device index
+				m_indexNewDevice = 0;								// Reset old new index
+				m_indexOldDevice = 0;								// Reset old device index
 				return;						// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 			}
 			else
@@ -277,7 +277,7 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 #pragma endregion
 
 #pragma region Database Navigation
-	if (EditDBDirectoryMenu)
+	if (mmCurrentMenu == EditDBDirectoryMenu)
 	{
 		if (iMenuInput == 0)	// Return to Main Menu
 		{

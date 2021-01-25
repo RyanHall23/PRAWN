@@ -23,7 +23,7 @@ public:
 	CInputManager();
 	~CInputManager();
 
-	void InputDetected(std::string deviceName, unsigned char RecievedKey);
+	void InputDetected(std::string deviceName, int deviceIndex, unsigned char RecievedKey);
 	int CheckScannerIsRegistered(std::string strShortDeviceName);
 	void CheckVehicle(CVehicle *vVehicle);
 	void AddVehicle(CVehicle *vVehicle);

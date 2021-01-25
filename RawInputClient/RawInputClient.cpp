@@ -215,7 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         UINT  cbSize = sizeof(RAWINPUTDEVICELIST);
 
         GetRawInputDeviceList(NULL, &uiNumDevices, cbSize);
-        pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(cbSize * uiNumDevices);
+        pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(static_cast<size_t>(cbSize) * uiNumDevices);
         GetRawInputDeviceList(pRawInputDeviceList, &uiNumDevices, cbSize);
 
         hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" DeviceList Num Devices %d \n"), uiNumDevices);
@@ -257,10 +257,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(dvcInfo);    // Truncate device name to remove excess data
             unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
+            int deviceIndex = 0;
 
             if (std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrRegisteredDevices.end())    // Check to see if it is a registered scanner device
             {
-                pInputManager->InputDetected(strTruncatedDeviceName, cTranslatedKey);   // Filter with inupt manager class
+                //Assign deviceIndex here
+                auto it = std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName);
+                pInputManager->InputDetected(strTruncatedDeviceName, deviceIndex, cTranslatedKey);   // Filter with input manager class
             }
             else    // Handle keyboard press in CLI menu
             {

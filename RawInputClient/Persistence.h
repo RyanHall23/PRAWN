@@ -80,19 +80,19 @@ struct CPersistence::DeviceProperties
 	/// <summary>
 	/// Replace registered device in its vector position
 	/// </summary>
-	/// <param name="indexOldDevice"></param>
-	/// <param name="indexNewDevice"></param>
+	/// <param name="m_indexOldDevices"></param>
+	/// <param name="m_indexNewDevice"></param>
 	/// <param name="strNavigationDevice"></param>
 	/// <returns></returns>
-	BOOL OverwriteDevice(int indexOldDevice, int indexNewDevice, std::string strNavigationDevice)
+	BOOL OverwriteDevice(int m_indexOldDevices, int m_indexNewDevice, std::string strNavigationDevice)
 	{
-		if (strNavigationDevice == m_vecstrAllDevices.at(indexNewDevice) ||
-			std::find(m_vecstrRegisteredDevices.begin(), m_vecstrRegisteredDevices.end(), m_vecstrAllDevices.at(indexNewDevice)) != m_vecstrRegisteredDevices.end())
+		if (strNavigationDevice == m_vecstrAllDevices.at(m_indexNewDevice) ||
+			std::find(m_vecstrRegisteredDevices.begin(), m_vecstrRegisteredDevices.end(), m_vecstrAllDevices.at(m_indexNewDevice)) != m_vecstrRegisteredDevices.end())
 		{
 			return FALSE;
 		}
 
-		m_vecstrRegisteredDevices.at(indexOldDevice) = m_vecstrAllDevices.at(indexNewDevice);
+		m_vecstrRegisteredDevices.at(m_indexOldDevices) = m_vecstrAllDevices.at(m_indexNewDevice);
 
 		return TRUE;
 	}

@@ -15,7 +15,7 @@ CInputManager::~CInputManager()
 /// </summary>
 /// <param name="strShortDeviceName"></param>
 /// <param name="cRecievedKey"></param>
-void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char cRecievedKey)
+void CInputManager::InputDetected(std::string strShortDeviceName, int deviceIndex, unsigned char cRecievedKey)
 {
     #ifdef _DEBUG
     OutputDebugString((LPCSTR)strShortDeviceName.c_str());   // Debug output device name
@@ -27,7 +27,7 @@ void CInputManager::InputDetected(std::string strShortDeviceName, unsigned char 
     OutputDebugString("\n");
     #endif
 
-    std::string strRegistrationPlate = pRegistration.BuildRegistration(cRecievedKey);
+    std::string strRegistrationPlate = pRegistration.BuildRegistration(cRecievedKey, deviceIndex);
     if (strRegistrationPlate == NULLSTRING)
     {
         return;

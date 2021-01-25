@@ -118,10 +118,20 @@ void CMenuCLI::PrintAllConnectedDeviceList()
 {
 	// Don't clear this menu as it is printed under a titled screen
 	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
-	
+
+	std::vector<std::string> unregisteredDevices;	// Unregistered devices vector to display devices that are able to be added (with exception to the UI device)
+
 	for (int i = 0; i < pPersistence->m_vecstrAllDevices.size(); ++i)
 	{
-		std::cout << M_TABLINE << M_TABLINE << i+1 << ".	" << pPersistence->m_vecstrAllDevices.at(i) << M_NEWLINE;
+		if (std::find(pPersistence->m_vecstrRegisteredDevices.begin(), pPersistence->m_vecstrRegisteredDevices.end(), pPersistence->m_vecstrAllDevices.at(i)) == pPersistence->m_vecstrRegisteredDevices.end())	// Check to see if it exists in the registered devices vector and whether to display it or not
+		{
+			unregisteredDevices.push_back(pPersistence->m_vecstrAllDevices.at(i));	// Add to display device vector
+		}
+	}
+
+	for (int i = 0; i < unregisteredDevices.size(); ++i)
+	{
+		std::cout << M_TABLINE << M_TABLINE << i+1 << ".	" << unregisteredDevices.at(i) << M_NEWLINE;
 	}
 }
 
