@@ -16,21 +16,23 @@ CRegistration::~CRegistration()
 /// </summary>
 /// <param name="translatedKey"></param>
 /// <returns></returns>
-std::string CRegistration::BuildRegistration(char translatedKey)
+std::string CRegistration::BuildRegistration(char translatedKey, int iDeviceIndex, int iDeviceTotal)
 {
+	m_vecStrRegistration.resize(iDeviceTotal);
+
 	if (IsAlphaNumeric(translatedKey))
 	{
 		switch (translatedKey)
 		{
 		case m_cNewLine:						// Is a new line key				(\n)
 		case m_cCarriageReturn:					// Is a carraige return key			(\r)
-			if (m_strRegistration.length() > 0)	// If not empty (Something can be returned)
+			if (m_vecStrRegistration.at(iDeviceIndex).length() > 0)	// If not empty (Something can be returned)
 			{
-				return ReturnInputEvent();
+				return ReturnInputEvent(iDeviceIndex);
 			}
 			break;
 		default:								// Is alphanumeric					(A-9)
-			m_strRegistration += std::toupper(translatedKey);		// Add to string, converting all to upper case
+			m_vecStrRegistration.at(iDeviceIndex) += std::toupper(translatedKey);		// Add to string, converting all to upper case
 			break;
 		}
 	}
@@ -45,20 +47,16 @@ std::string CRegistration::BuildRegistration(char translatedKey)
 /// <returns></returns>
 bool CRegistration::IsAlphaNumeric(char translatedKey)
 {
-	if (translatedKey >= 0 && translatedKey <= 255)
-	{
-		return true;
-	}
-	return false;
+	return (translatedKey >= 0 && translatedKey <= 255);
 }
 
 /// <summary>
 /// Clear string after return key event
 /// </summary>
 /// <returns></returns>
-std::string CRegistration::ReturnInputEvent()
+std::string CRegistration::ReturnInputEvent(int iDeviceIndex)
 {
-	std::string strReturnRegistration = m_strRegistration;
-	m_strRegistration = NULLSTRING;
+	std::string strReturnRegistration = m_vecStrRegistration.at(iDeviceIndex);
+	m_vecStrRegistration.at(iDeviceIndex) = NULLSTRING;
 	return strReturnRegistration;
 }
