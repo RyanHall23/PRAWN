@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RawInputClient", "RawInputC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRAWN Viewer", "PRAWN Viewer\PRAWN Viewer.csproj", "{23233637-9749-47CB-9AA3-366E26A7853A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RawInputClientTests", "RawInputClientTests\RawInputClientTests.vcxproj", "{412B330B-BCE3-4C4F-BC98-487632296E5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,16 @@ Global
 		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x64.Build.0 = Release|Any CPU
 		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x86.ActiveCfg = Release|Any CPU
 		{23233637-9749-47CB-9AA3-366E26A7853A}.Release|x86.Build.0 = Release|Any CPU
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Debug|x64.ActiveCfg = Debug|x64
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Debug|x64.Build.0 = Debug|x64
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Debug|x86.ActiveCfg = Debug|Win32
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Debug|x86.Build.0 = Debug|Win32
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Release|Any CPU.ActiveCfg = Release|Win32
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Release|x64.ActiveCfg = Release|x64
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Release|x64.Build.0 = Release|x64
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Release|x86.ActiveCfg = Release|Win32
+		{412B330B-BCE3-4C4F-BC98-487632296E5D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

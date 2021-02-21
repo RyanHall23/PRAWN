@@ -1,11 +1,11 @@
 #pragma once
 
-#include "MenuCLI.h"
-
 #include <string>
 #include <iostream>
-
 #include <windows.h>
+
+#include "MenuCLI.h"
+#include "Persistence.h"
 
 class CMenuNavigation
 {
@@ -19,19 +19,44 @@ private:
 	static constexpr char		m_cEscape = '\b';
 	static constexpr char		m_cCarriageReturn = '\r';
 
-	CMenuCLI m_pMenuCli;
+	const int					m_iDeviceListOffset = 1;
+	static std::string			m_strNavigationDevice;	// For storing device name that is navigating menu
 
-	enum MenuPosition
+	BOOL m_bOverwriteDeregistered = FALSE;
+	int m_indexOldDevice = 0;
+	int m_indexNewDevice = 0;
+
+	CPersistence	m_pPersistence;
+	CMenuCLI		m_pMenuCli;
+	CPersistence::DeviceProperties	m_pDevProp;
+
+	enum MainMenuPosition
 	{
-		MainMenu = 0,
-		ScannerDevicesMenu,
+		MainMenu			= 0,	
+
+		// Scanners Menu Navigation group
+		ScannersMain		= 10,	
+		ScannersAdd			= 11,
+		ScannersRemove		= 12,
+		ScannersOverwrite	= 13,
+
+		// Speed & Location Menu Navigation group
+		SpeedLocationMenu	= 20, 	
+		EditSpeed			= 21,
+		EditActualLocation	= 22,
+
+		// Database Menu Navigation group
+		EditDBDirectoryMenu = 30
 	};
 
-	MenuPosition currentMenuPosition = MainMenu;
+	MainMenuPosition mmCurrentMenu = MainMenu;
 
 public:
 	CMenuNavigation();
 	~CMenuNavigation();
+
+	void RegisterNavigationDevice(std::string strDeviceName);
+	std::string GetNavigationDevice();
 
 	// Menu navigation tools
 	void BuildCommand(char translatedKey);
