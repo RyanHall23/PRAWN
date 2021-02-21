@@ -29,7 +29,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
                                                                                 // TODO: Verify memory safety
 std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create safe smart pointer of InputManager class
-std::unique_ptr<CPersistence> pPersistence  (new CPersistence());                             // Create safe smart pointer of Devices class
+std::unique_ptr<CPersistence> pPersistence  (new CPersistence());               // Create safe smart pointer of Devices class
 std::unique_ptr<CMenuCLI> pMainMenuCLI (new CMenuCLI());                        // Create safe smart pointer of MenuCLI class
 std::unique_ptr<CMenuNavigation> pMenuNavigation(new CMenuNavigation());        // Create safe smart pointer of MenuCLI class
 
@@ -257,12 +257,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(dvcInfo);    // Truncate device name to remove excess data
             unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-            int deviceIndex = 0;
 
             if (std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrRegisteredDevices.end())    // Check to see if it is a registered scanner device
             {
-                //Assign deviceIndex here
-                auto it = std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName);
+                auto it = std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName);  // Create iterator to get device index
+                int deviceIndex = std::distance(pDeviceSettings->m_vecstrRegisteredDevices.begin(), it);                                                            // Assign deviceIndex here
                 pInputManager->InputDetected(strTruncatedDeviceName, deviceIndex, cTranslatedKey);   // Filter with input manager class
             }
             else    // Handle keyboard press in CLI menu
