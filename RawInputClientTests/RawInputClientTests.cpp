@@ -23,7 +23,7 @@ namespace RawInputClientTests
 	public:
 
 		/// <summary>
-		/// Test the Registering a device, with two devices being recognised by the OS, ensuring the device is in the vector and it isn't recognised as a navigation device for CLI menus
+		/// Test: The Registering a device, with two devices being recognised by the OS, ensuring the device is in the vector and it isn't recognised as a navigation device for CLI menus
 		/// </summary>
 		TEST_METHOD(RegisterDevice)
 		{
@@ -43,7 +43,7 @@ namespace RawInputClientTests
 		}
 
 		/// <summary>
-		/// Test the deregstering of a device, by adding a device to the vector and remove it with the function
+		/// Test:The deregstering of a device, by adding a device to the vector and remove it with the function
 		/// </summary>
 		TEST_METHOD(DeregisterDevice)
 		{
@@ -62,7 +62,35 @@ namespace RawInputClientTests
 		}
 
 		/// <summary>
-		/// Multiple time gates (I.E. 2+ scanning devices) testing if speed limit is broken
+		/// Test: Vehicle passing through safely
+		/// </summary>
+		TEST_METHOD(SafeVehicleDetection)
+		{
+			bool target = false;
+			CInputManager pInputManager;
+			pInputManager.pDevProp.m_dbOptimumTravelTime = 0.01;
+			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
+			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			pInputManager.InputDetected("devA", 0, 'a');
+			pInputManager.InputDetected("devA", 0, '\n');
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			pInputManager.InputDetected("devB", 1, 'a');
+			pInputManager.InputDetected("devB", 1, '\n');
+
+			// Elapsed Time == 1 sec
+
+			if (pInputManager.m_strVehicleOffence == "Safe")
+			{
+				target = true;
+			}
+
+			Assert::IsTrue(target);
+		}
+
+		/// <summary>
+		/// Test: Multiple time gates (I.E. 2+ scanning devices) testing if speed limit is broken
 		/// </summary>
 		TEST_METHOD(HighSpeedMultipleTimeGates)
 		{
@@ -95,7 +123,7 @@ namespace RawInputClientTests
 		}
 
 		/// <summary>
-		/// Test the deregstering of a device, by adding a device to the vector and remove it with the function
+		/// Test: If high speed is detected through gate
 		/// </summary>
 		TEST_METHOD(HighSpeedDetected)
 		{
@@ -123,7 +151,7 @@ namespace RawInputClientTests
 		}
 
 		/// <summary>
-		/// Testing if wrong way is detected
+		/// Test: If wrong way is detected
 		/// </summary>
 		TEST_METHOD(WrongWayDetected)
 		{
@@ -150,6 +178,9 @@ namespace RawInputClientTests
 			Assert::IsTrue(target);
 		}
 
+		/// <summary>
+		/// Test: Wrong way (negative time) and high speed is detected
+		/// </summary>
 		TEST_METHOD(WrongWayHighSpeedDetected)
 		{
 			bool target = false;
