@@ -123,6 +123,41 @@ namespace RawInputClientTests
 		}
 
 		/// <summary>
+		/// Test: Multiple time gates (I.E. 2+ scanning devices) testing if speed limit is broken in reverse
+			/// </summary>
+		TEST_METHOD(HighSpeedMultipleTimeGatesWrongOrder)
+		{
+			bool target = false;
+
+			CInputManager pInputManager;
+			pInputManager.pDevProp.m_dbOptimumTravelTime = 2.00;
+			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
+			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
+			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devC");
+
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(2000));	// Also checks that values aren't impacted by clocks current time and are "zeroed"
+			pInputManager.InputDetected("devC", 2, 'a');
+			pInputManager.InputDetected("devC", 2, '\n');
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			pInputManager.InputDetected("devB", 1, 'a');
+			pInputManager.InputDetected("devB", 1, '\n');
+			std::this_thread::sleep_for(std::chrono::milliseconds(2000));	
+			pInputManager.InputDetected("devA", 0, 'a');
+			pInputManager.InputDetected("devA", 0, '\n');
+
+			// Time for vehicle is ~1.00sec, anything faster (lower) than this will be speeding
+
+			if (pInputManager.m_strVehicleOffence == "Speeding & Wrong Way")
+			{
+				target = true;
+			}
+
+			Assert::IsTrue(target);
+		}
+
+
+		/// <summary>
 		/// Test: If high speed is detected through gate
 		/// </summary>
 		TEST_METHOD(HighSpeedDetected)
