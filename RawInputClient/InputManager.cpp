@@ -152,7 +152,7 @@ void CInputManager::CalculateTotalTravelTime(CVehicle* vVehicle)
 
             for (int i = 0; i < vVehicle->m_vecDbScanningTimes.size(); ++i)
             {
-                vVehicle->m_vecDbScanningTimes.at(i) += dbZeroTime;                     // Calculate all times to normalise data
+                vVehicle->m_vecDbScanningTimes.at(i) -= dbZeroTime;                     // Calculate all times to normalise data
                 vVehicle->m_dbTotalTravelTime -= vVehicle->m_vecDbScanningTimes.at(i);  // Total amount of times (negative)
             }
 
