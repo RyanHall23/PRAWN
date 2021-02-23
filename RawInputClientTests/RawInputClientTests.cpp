@@ -102,7 +102,7 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devC");
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(2000));	// Also checks that values aren't impacted by clocks current time and are "zeroed"
 			pInputManager.InputDetected("devA", 0, 'a');
 			pInputManager.InputDetected("devA", 0, '\n');
 			std::this_thread::sleep_for(std::chrono::milliseconds(1000));

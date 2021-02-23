@@ -94,8 +94,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
             OutputDebugString(" Speeding \n");
             #endif
 
-            //UpdateDatabase(vVehicle->m_strRegistration, "Speeding");        // Database call
-            RemoveVehicle(vVehicle);                                        // Delete call
+            RemoveVehicle(vVehicle);    // Delete call
             m_strVehicleOffence = "Speeding";
         }
     }
@@ -108,8 +107,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
             OutputDebugString(" Speeding & Wrong Way \n");
             #endif
 
-            //UpdateDatabase(vVehicle->m_strRegistration, "Speeding & Wrong Way");        // Database call
-            RemoveVehicle(vVehicle);                                                    // Delete call
+            RemoveVehicle(vVehicle);    // Delete call
             m_strVehicleOffence = "Speeding & Wrong Way";
 
         }
@@ -120,9 +118,7 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
             OutputDebugString(" Wrong Way \n");
             #endif
 
-            //UpdateDatabase(vVehicle->m_strRegistration, "Wrong Way");            // Database call
-            RemoveVehicle(vVehicle);                                            // Delete call
-
+            RemoveVehicle(vVehicle);    // Delete call
             m_strVehicleOffence = "Wrong Way";
         }
     }
@@ -134,35 +130,47 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
 /// <param name="vVehicle"></param>
 void CInputManager::CalculateTotalTravelTime(CVehicle* vVehicle)
 {
+    double dbZeroTime;  // Used to zero times to calculate an accurate average
+
     if (vVehicle->m_vecDbScanningTimes.size() > 2)  // If there are more than two scanners (An average can be calculated) Find AVERAGE MEAN of TIMES
     {
         if (vVehicle->m_iDirectionOrigin == 0)
         {
+            dbZeroTime = vVehicle->m_vecDbScanningTimes.at(0);  // Get "0" timestamp
+
             for (int i = 0; i < vVehicle->m_vecDbScanningTimes.size(); ++i)
             {
+                vVehicle->m_vecDbScanningTimes.at(i) -= dbZeroTime;                     // Calculate all times to normalise data       
                 vVehicle->m_dbTotalTravelTime += vVehicle->m_vecDbScanningTimes.at(i);  // Total amount of times
             }
 
             vVehicle->m_dbTotalTravelTime /= vVehicle->m_vecDbScanningTimes.size(); // Find MEAN from amount of scanners
         }
-        else if (vVehicle->m_iDirectionOrigin == 0)
+        else
         {
+            dbZeroTime = vVehicle->m_vecDbScanningTimes.at(vVehicle->m_vecDbScanningTimes.size()-1);    // Get negative "0" timestamp
+
             for (int i = 0; i < vVehicle->m_vecDbScanningTimes.size(); ++i)
             {
-                vVehicle->m_dbTotalTravelTime -= vVehicle->m_vecDbScanningTimes.at(i);  // Total amount of times
+                vVehicle->m_vecDbScanningTimes.at(i) += dbZeroTime;                     // Calculate all times to normalise data
+                vVehicle->m_dbTotalTravelTime -= vVehicle->m_vecDbScanningTimes.at(i);  // Total amount of times (negative)
             }
 
             vVehicle->m_dbTotalTravelTime /= vVehicle->m_vecDbScanningTimes.size(); // Find MEAN from amount of scanners
         }
 
     }
-    else if(vVehicle->m_iDirectionOrigin == 0)
+    else 
     {
-        vVehicle->m_dbTotalTravelTime = vVehicle->m_vecDbScanningTimes.at(1) - vVehicle->m_vecDbScanningTimes.at(0);    // If two scanners do standard end - start calculation
-    }
-    else if (vVehicle->m_iDirectionOrigin != 0)
-    {
-        vVehicle->m_dbTotalTravelTime = vVehicle->m_vecDbScanningTimes.at(0) - vVehicle->m_vecDbScanningTimes.at(1);    // If two scanners do standard end - start negative (reverse) calculation
+        if (vVehicle->m_iDirectionOrigin == 0)
+        {
+            vVehicle->m_dbTotalTravelTime = vVehicle->m_vecDbScanningTimes.at(1) - vVehicle->m_vecDbScanningTimes.at(0);    // If two scanners do standard end - start calculation
+        }
+        else
+        {
+            vVehicle->m_dbTotalTravelTime = vVehicle->m_vecDbScanningTimes.at(0) - vVehicle->m_vecDbScanningTimes.at(1);    // If two scanners do standard end - start negative (reverse) calculation
+
+        }
     }
 }
 
@@ -284,48 +292,3 @@ void CInputManager::SetVehicle(CVehicle* vVehicle, int iVecIndex)
 {
     m_vecActiveVehicles.at(iVecIndex) = vVehicle;
 }
-
-/// <summary>
-/// Update Database with new entry if required from illegal vehicle state data
-/// 
-/// Reference of OLEDB - https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlconnection.begintransaction?view=netframework-4.7.2
-/// 64-bit Database Engine - https://www.microsoft.com/en-us/download/confirmation.aspx?id=13255
-/// </summary>
-//void CInputManager::UpdateDatabase(std::string strRegistrationPlate, std::string strOffence)
-//{
-//    std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
-//
-//    OleDbConnection^ oleConnection = nullptr;
-//    OleDbCommand^ oleCommand = nullptr;
-//    OleDbDataReader^ dbReader = nullptr;
-//
-//    std::string prepSQL = ("INSERT INTO tblOffences (Registration, Location, Offence) VALUES ('" + strRegistrationPlate + "','" + pPersistence->m_strScannerLocation + "','" + strOffence + "')");
-//
-//    System::String^ result = gcnew System::String(prepSQL.c_str());
-//    System::String^ strSQL = gcnew System::String(result);
-//    System::String^ sstrDatabaseDirectory = gcnew System::String(pPersistence->m_strDatabaseDirectory.c_str()); // Convert std::string to System::String
-//
-//    try
-//    {
-//        // TODO: Use db location from DeviceProperties and make it dynamically modifiable in runtime
-//        oleConnection = gcnew OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=..\\DrivingOffences.accdb");
-//        oleConnection->Open();
-//        oleCommand = gcnew OleDbCommand(strSQL, oleConnection);
-//
-//        dbReader = oleCommand->ExecuteReader(System::Data::CommandBehavior::CloseConnection);
-//        //oleConnection->Close();
-//    }
-//    catch (System::Exception^ ex)
-//    {
-//        CString cstrException = ex->ToString();
-//        #ifdef _DEBUG
-//        OutputDebugString("\n");
-//        OutputDebugString(cstrException);
-//        OutputDebugString("\n");
-//        #endif
-//    }
-//
-//    delete oleConnection;
-//    delete oleCommand;
-//    delete dbReader;
-//}

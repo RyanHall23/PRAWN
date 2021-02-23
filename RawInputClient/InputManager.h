@@ -31,8 +31,7 @@ public:
 	void RemoveVehicle(CVehicle* vVehicle);
 	bool VehicleExists(CVehicle* vVehicle);
 	std::tuple<CVehicle*, int> GetVehicle(std::string strRegistrationPlate);
-	void SetVehicle(CVehicle* vVehicle, int iVecIndex);
-	//void UpdateDatabase(std::string strRegistrationPlate, std::string Offence);
+	void SetVehicle(CVehicle* vVehicle, int iVecIndex);	
 	void PurgeVehicles();
 
 	std::vector<CVehicle*> m_vecActiveVehicles;
