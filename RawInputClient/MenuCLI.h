@@ -49,9 +49,10 @@ private:
 	const std::string M_STR_CANNOTEDITSPEEDERROR1 = "		Speed is too HIGH, it MUST be UNDER 120 MPH and ABOVE 0 MPH\n";
 
 	// Edit Database Location/Filename Strings
-	const std::string M_STR_EDITDBDIR1 = "		Enter the desired LOCATION and NAME for the DATABASE \n";
+	const std::string M_STR_EDITDBDIR1 = "		Navigate to the desried database and select the file \n";
 	const std::string M_STR_EDITDBDIR2 = "		Database Directory is currently set to:	";
-	const std::string M_STR_EDITDBDIR3 = "		0.	Return to Main Menu\n";
+	const std::string M_STR_EDITDBDIR3 = "		1.	Select Database File\n";
+	const std::string M_STR_EDITDBDIR4 = "		0.	Return to Main Menu\n";
 
 
 

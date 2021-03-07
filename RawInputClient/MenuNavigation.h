@@ -49,7 +49,12 @@ private:
 		EditDBDirectoryMenu = 30
 	};
 
-	MainMenuPosition mmCurrentMenu = MainMenu;
+	enum KeyCodes
+	{
+		KEY_SHIFT = 16,
+	};
+
+	MainMenuPosition eMenuPosition = MainMenu;
 
 public:
 	CMenuNavigation();
@@ -58,10 +63,12 @@ public:
 	void RegisterNavigationDevice(std::string strDeviceName);
 	std::string GetNavigationDevice();
 
+	std::string OpenFile(char* filter = "Database Files (*.accdb, *.mdb)\0*.accdb;*.mdb\0", HWND owner = NULL);
+
 	// Menu navigation tools
 	void BuildCommand(char translatedKey);
 	void ProcessCommand(std::string cmdMsg);
-	bool IsAlphaNumeric(char translatedKey);
+	bool IsValidCharacter(char &translatedKey);
 	int  ConvertMenuInputToInt(std::string cmdMsg);
 
 	void KeyInputEvent();

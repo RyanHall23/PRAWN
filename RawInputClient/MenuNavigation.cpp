@@ -28,12 +28,41 @@ std::string CMenuNavigation::GetNavigationDevice()
 }
 
 /// <summary>
+/// Open file window to allow user to select the database file they wish to use, and get directory
+/// </summary>
+/// <param name="filter"></param>
+/// <param name="owner"></param>
+/// <returns></returns>
+std::string CMenuNavigation::OpenFile(char* filter, HWND owner)
+{
+	OPENFILENAME ofn;
+	char fileName[MAX_PATH] = "";
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = owner;
+	ofn.lpstrFilter = filter;
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;	// OFN_NOCHANGEDIR - Restores back to default working directory, changing the save destination of the settings file
+	ofn.lpstrDefExt = "";
+
+	std::string fileNameStr;
+
+	if (GetOpenFileName(&ofn))
+		fileNameStr = fileName;
+
+	return fileNameStr;
+}
+
+
+/// <summary>
 /// Build user input command string member
 /// </summary>
 /// <param name="translatedKey"></param>
 void CMenuNavigation::BuildCommand(char translatedKey)
 {
-	if (IsAlphaNumeric(translatedKey))
+	if (IsValidCharacter(translatedKey))
 	{
 		switch (translatedKey)
 		{
@@ -65,68 +94,68 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 {
 	int iMenuInput = ConvertMenuInputToInt(cmdMsg);			// Convert to int to handle menu keys to correspond with options
 
-	if (mmCurrentMenu == MainMenu)
+	if (eMenuPosition == MainMenu)
 	{
 		if (iMenuInput == 1)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintScannersMainMenu();				// Print Scanner devices Main Menu
-			mmCurrentMenu = ScannersMain;					// Set current menu position to ScannerDevices Menu
+			eMenuPosition = ScannersMain;					// Set current menu position to ScannerDevices Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 2)	// Edit Speed & Location screen entry
 		{
 			m_pMenuCli.PrintSpeedLocMainMenu();				// Print SpeedLoc Main menu
-			mmCurrentMenu = SpeedLocationMenu;				// Set current menu position to Speed&Location Menu
+			eMenuPosition = SpeedLocationMenu;				// Set current menu position to Speed&Location Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 3)	// Edit Database screen entry
 		{
 			m_pMenuCli.PrintDBDirNameMenu();				// Print 
-			mmCurrentMenu = EditDBDirectoryMenu;			// Set current menu position to DB Directory Edit Menu
+			eMenuPosition = EditDBDirectoryMenu;			// Set current menu position to DB Directory Edit Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
 #pragma region Scanner Navigation
-	if (mmCurrentMenu == ScannersMain)
+	if (eMenuPosition == ScannersMain)
 	{
 		if (iMenuInput == 0)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintMainMenu();						// Print Main Menu
-			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
+			eMenuPosition = MainMenu;						// Set current menu position to MainMenu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 1)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintAddScannersDeviceMenu();		// Print Add Scanner devices menu
-			mmCurrentMenu = ScannersAdd;					// Set current menu position to ScannersAdd
+			eMenuPosition = ScannersAdd;					// Set current menu position to ScannersAdd
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 2)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintRemoveScannersDeviceMenu();		// Print Remove Scanner devices menu
-			mmCurrentMenu = ScannersRemove;					// Set current menu position to ScannersRemove
+			eMenuPosition = ScannersRemove;					// Set current menu position to ScannersRemove
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 3)	// Edit Scanners screen entry
 		{
 			m_pMenuCli.PrintOverwriteScannersDeviceMenu();	// Print Overwrite Scanner devices menu
-			mmCurrentMenu = ScannersOverwrite;				// Set current menu position to ScannersOverwrite
+			eMenuPosition = ScannersOverwrite;				// Set current menu position to ScannersOverwrite
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
-	if (mmCurrentMenu == ScannersAdd)
+	if (eMenuPosition == ScannersAdd)
 	{
 		if (iMenuInput == 0)	// Return to Scanners Main
 		{
 			m_pMenuCli.PrintScannersMainMenu();				// Print Scanner devices menu
-			mmCurrentMenu = ScannersMain;					// Set current menu position to ScannerMain Menu
+			eMenuPosition = ScannersMain;					// Set current menu position to ScannerMain Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
@@ -146,12 +175,12 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		}
 	}
 
-	if (mmCurrentMenu == ScannersRemove)
+	if (eMenuPosition == ScannersRemove)
 	{
 		if (iMenuInput == 0)	// Return to Scanners Main
 		{
 			m_pMenuCli.PrintScannersMainMenu();				// Print Scanner devices menu
-			mmCurrentMenu = ScannersMain;					// Set current menu position to ScannerMain Menu
+			eMenuPosition = ScannersMain;					// Set current menu position to ScannerMain Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
@@ -164,12 +193,12 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		}
 	}
 
-	if (mmCurrentMenu == ScannersOverwrite)
+	if (eMenuPosition == ScannersOverwrite)
 	{
 		if (iMenuInput == 0)	// Return to Scanners Main
 		{
 			m_pMenuCli.PrintScannersMainMenu();					// Print Scanner devices menu
-			mmCurrentMenu = ScannersMain;						// Set current menu position to ScannerMain Menu
+			eMenuPosition = ScannersMain;						// Set current menu position to ScannerMain Menu
 			m_bOverwriteDeregistered = FALSE;					// Reset Deregistered state to FALSE before overwriting
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
@@ -206,36 +235,36 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 #pragma endregion
 
 #pragma region Speed & Location Navigation
-	if (mmCurrentMenu == SpeedLocationMenu)
+	if (eMenuPosition == SpeedLocationMenu)
 	{
 		if (iMenuInput == 0)	// Return to Main Menu
 		{
 			m_pMenuCli.PrintMainMenu();						// Print Main Menu
-			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
+			eMenuPosition = MainMenu;						// Set current menu position to MainMenu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 1)	// Edit Speed Menu
 		{
 			m_pMenuCli.PrintEditSpeedMenu();				// Print Edit Speed Menu
-			mmCurrentMenu = EditSpeed;						// Set current menu position to EditSpeed Menu
+			eMenuPosition = EditSpeed;						// Set current menu position to EditSpeed Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
 		if (iMenuInput == 2)	// Edit Location Menu
 		{
 			m_pMenuCli.PrintEditLocationMenu();				// Print Edit Location Menu
-			mmCurrentMenu = EditActualLocation;				// Set current menu position to EditLocation Menu
+			eMenuPosition = EditActualLocation;				// Set current menu position to EditLocation Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
 
-	if (mmCurrentMenu == EditSpeed)
+	if (eMenuPosition == EditSpeed)
 	{
 		if (iMenuInput == 0)	// Return to Speed&Location Main Menu
 		{
 			m_pMenuCli.PrintSpeedLocMainMenu();				// Print SpeedLocation Main Menu
-			mmCurrentMenu = SpeedLocationMenu;				// Set current menu position to SpeedLocation Menu
+			eMenuPosition = SpeedLocationMenu;				// Set current menu position to SpeedLocation Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 
@@ -256,12 +285,12 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		}
 	}
 
-	if (mmCurrentMenu == EditActualLocation)
+	if (eMenuPosition == EditActualLocation)
 	{
 		if (iMenuInput == 0)	// Return to Speed&Location Menu
 		{
 			m_pMenuCli.PrintSpeedLocMainMenu();				// Print SpeedLocation Main Menu
-			mmCurrentMenu = SpeedLocationMenu;				// Set current menu position to SpeedLocation Menu
+			eMenuPosition = SpeedLocationMenu;				// Set current menu position to SpeedLocation Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 		else
@@ -277,17 +306,18 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 #pragma endregion
 
 #pragma region Database Navigation
-	if (mmCurrentMenu == EditDBDirectoryMenu)
+	if (eMenuPosition == EditDBDirectoryMenu)
 	{
 		if (iMenuInput == 0)	// Return to Main Menu
 		{
 			m_pMenuCli.PrintMainMenu();						// Print Main Menu
-			mmCurrentMenu = MainMenu;						// Set current menu position to MainMenu
+			eMenuPosition = MainMenu;						// Set current menu position to MainMenu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
-		else
+		if (iMenuInput == 1)	// Open File Selector
 		{
-			m_pDevProp.OverwriteDatabaseDirectory(cmdMsg);	// Use cmdMsg to overwrite database directory with string
+			std::string strNewDBFileLocation = OpenFile();
+			m_pDevProp.OverwriteDatabaseDirectory(strNewDBFileLocation);	// Use cmdMsg to overwrite database directory with string
 			m_pMenuCli.PrintDBDirNameMenu();				// Reperint database directory with new directory setting
 			m_pPersistence.SaveSettings(m_pDevProp);		// Save setting into .txt File
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
@@ -303,9 +333,9 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 /// </summary>
 /// <param name="translatedKey"></param>
 /// <returns></returns>
-bool CMenuNavigation::IsAlphaNumeric(char translatedKey)
+bool CMenuNavigation::IsValidCharacter(char &translatedKey)
 {
-	if (translatedKey >= 0 && translatedKey <= 255)
+	if (translatedKey >= 0 && translatedKey <= 255 && translatedKey != KEY_SHIFT)
 	{
 		return true;
 	}

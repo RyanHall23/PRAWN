@@ -13,11 +13,6 @@
 #include "Vehicle.h"
 #include "Clock.h"
 
-//#using <System.Data.dll>
-//#using <System.dll>
-
-//using namespace System::Data::OleDb;
-
 class CInputManager
 {
 public:

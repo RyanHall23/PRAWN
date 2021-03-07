@@ -169,7 +169,6 @@ void CInputManager::CalculateTotalTravelTime(CVehicle* vVehicle)
         else
         {
             vVehicle->m_dbTotalTravelTime = vVehicle->m_vecDbScanningTimes.at(0) - vVehicle->m_vecDbScanningTimes.at(1);    // If two scanners do standard end - start negative (reverse) calculation
-
         }
     }
 }
