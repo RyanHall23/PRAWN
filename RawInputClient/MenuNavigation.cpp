@@ -333,13 +333,9 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 /// </summary>
 /// <param name="translatedKey"></param>
 /// <returns></returns>
-bool CMenuNavigation::IsValidCharacter(char &translatedKey)
+bool CMenuNavigation::IsValidCharacter(char translatedKey)
 {
-	if (translatedKey >= 0 && translatedKey <= 255 && translatedKey != KEY_SHIFT)
-	{
-		return true;
-	}
-	return false;
+	return (translatedKey >= 0 && translatedKey <= 255 && translatedKey != KEY_SHIFT);
 }
 
 /// <summary>
