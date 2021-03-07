@@ -123,11 +123,28 @@ struct CPersistence::DeviceProperties
 	}
 
 	/// <summary>
+	/// Ensure Directory uses double slashes to allow for succesful directory navigation to database
+	/// </summary>
+	/// <param name="newDirectory"></param>
+	std::string FormatDirectory(std::string newDirectory)
+	{
+		for (int i = 0; i < newDirectory.size(); ++i)
+		{
+			if (newDirectory[i] == '\\')
+			{
+				newDirectory.insert(i, "\\");
+				++i;
+			}
+		}
+		return newDirectory;
+	}
+
+	/// <summary>
 	/// Overwrite database directory location
 	/// </summary>
 	/// <param name="newDirectory"></param>
 	void OverwriteDatabaseDirectory(std::string newDirectory)
 	{
-		m_strDatabaseDirectory = newDirectory;
+		m_strDatabaseDirectory = FormatDirectory(newDirectory);
 	}
 };

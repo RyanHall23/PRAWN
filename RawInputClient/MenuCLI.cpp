@@ -108,7 +108,7 @@ void CMenuCLI::PrintDBDirNameMenu()
 	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
 
 	ClearMenu();
-	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITDBDIR1 << M_NEWLINE << M_STR_EDITDBDIR2 << pPersistence->m_strDatabaseDirectory << M_NEWLINE << M_NEWLINE << M_STR_EDITDBDIR3 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_EDITDBDIR1 << M_NEWLINE << M_STR_EDITDBDIR2 << pPersistence->m_strDatabaseDirectory << M_NEWLINE << M_NEWLINE << M_STR_EDITDBDIR3 << M_NEWLINE << M_STR_EDITDBDIR4 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
 }
 
 /// <summary>
