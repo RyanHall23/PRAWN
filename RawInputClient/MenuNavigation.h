@@ -68,7 +68,7 @@ public:
 	// Menu navigation tools
 	void BuildCommand(char translatedKey);
 	void ProcessCommand(std::string cmdMsg);
-	bool IsValidCharacter(char &translatedKey);
+	bool IsValidCharacter(char translatedKey);
 	int  ConvertMenuInputToInt(std::string cmdMsg);
 
 	void KeyInputEvent();
