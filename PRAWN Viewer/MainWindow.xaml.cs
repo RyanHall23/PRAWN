@@ -69,13 +69,23 @@ namespace PRAWN_Viewer
         private void CreateTimer()
         {
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Interval = new TimeSpan(0, 1, 0);   // Update every minute
             dispatcherTimer.Start();
         }
+
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            dg_Offences.ItemsSource = rd;
-            dg_Offences.Items.Refresh();
+            OleDbCommand cmd = new OleDbCommand
+            {
+                CommandText = "select* from [tblOffences]",
+                Connection = con
+            };
+            rd = cmd.ExecuteReader();
+            while (rd.Read())
+            {
+                dg_Offences.ItemsSource = rd;
+                dg_Offences.Items.Refresh();
+            }
         }
     }
 }
