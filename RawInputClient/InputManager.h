@@ -1,7 +1,6 @@
 #pragma once
 
 #include <windows.h>
-#include <atlstr.h>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -10,6 +9,7 @@
 
 #include "Registration.h"
 #include "Persistence.h"
+#include "DatabaseHelper.h"
 #include "Vehicle.h"
 #include "Clock.h"
 
@@ -31,9 +31,11 @@ public:
 
 	std::vector<CVehicle*> m_vecActiveVehicles;
 
+	// To Do: Create smart pointers
 	CPersistence::DeviceProperties pDevProp;
-	CRegistration pRegistration;					// To Do: Create smart pointer of Registration class
+	CRegistration pRegistration;					
 	CClock pClock;
+	CDatabaseHelper pDatabaseHelper;
 
 	std::string m_strVehicleOffence;	// Used for testing vehicle outcome through circuit
 private:
