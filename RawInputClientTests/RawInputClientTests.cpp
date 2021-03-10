@@ -13,6 +13,8 @@
 #include "../RawInputClient/Registration.cpp"
 #include "../RawInputClient/Clock.h"
 #include "../RawInputClient/Clock.cpp"
+#include "../RawInputClient/DatabaseHelper.h"
+#include "../RawInputClient/DatabaseHelper.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -71,6 +73,8 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_dbOptimumTravelTime = 0.01;
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
+			pInputManager.pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
+			pInputManager.pDevProp.m_strDatabaseDirectory = "..//..//DrivingOffences.accdb";
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			pInputManager.InputDetected("devA", 0, 'a');
@@ -101,6 +105,8 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devC");
+			pInputManager.pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
+			pInputManager.pDevProp.m_strDatabaseDirectory = "..//..//DrivingOffences.accdb";
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(2000));	// Also checks that values aren't impacted by clocks current time and are "zeroed"
 			pInputManager.InputDetected("devA", 0, 'a');
@@ -134,6 +140,8 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devC");
+			pInputManager.pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
+			pInputManager.pDevProp.m_strDatabaseDirectory = "..//..//DrivingOffences.accdb";
 
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(2000));	// Also checks that values aren't impacted by clocks current time and are "zeroed"
@@ -167,6 +175,8 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_dbOptimumTravelTime = 2.00;
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
+			pInputManager.pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
+			pInputManager.pDevProp.m_strDatabaseDirectory = "..//..//DrivingOffences.accdb";
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			pInputManager.InputDetected("devA", 0,'a');
@@ -195,6 +205,8 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_dbOptimumTravelTime = 0.1;
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
+			pInputManager.pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
+			pInputManager.pDevProp.m_strDatabaseDirectory = "..//..//DrivingOffences.accdb";
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			pInputManager.InputDetected("devB", 1, 'a');
@@ -223,6 +235,8 @@ namespace RawInputClientTests
 			pInputManager.pDevProp.m_dbOptimumTravelTime = 2.00;
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager.pDevProp.m_vecstrRegisteredDevices.push_back("devB");
+			pInputManager.pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
+			pInputManager.pDevProp.m_strDatabaseDirectory = "..//..//DrivingOffences.accdb";
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			pInputManager.InputDetected("devB", 1, 'a');

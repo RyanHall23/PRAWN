@@ -19,7 +19,6 @@
 #include <array>
 #include <limits>
 #include <algorithm>
-
 // #define _CRTDBG_MAP_ALLOC
 #define MAX_LOADSTRING 100
 
@@ -27,13 +26,14 @@
 HINSTANCE hInst;                                // Current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name
-                                                                                // TODO: Verify memory safety
-std::unique_ptr<CInputManager> pInputManager(new CInputManager());              // Create safe smart pointer of InputManager class
-std::unique_ptr<CPersistence> pPersistence  (new CPersistence());               // Create safe smart pointer of Devices class
-std::unique_ptr<CMenuCLI> pMainMenuCLI (new CMenuCLI());                        // Create safe smart pointer of MenuCLI class
-std::unique_ptr<CMenuNavigation> pMenuNavigation(new CMenuNavigation());        // Create safe smart pointer of MenuCLI class
 
-std::unique_ptr<CPersistence::DeviceProperties> pDeviceSettings(new CPersistence::DeviceProperties());
+// TODO: Verify memory safety
+std::unique_ptr<CPersistence::DeviceProperties> pDevProp(new CPersistence::DeviceProperties());     
+std::unique_ptr<CPersistence> pPersistence(new CPersistence());      
+std::unique_ptr<CInputManager> pInputManager;  
+std::unique_ptr<CMenuCLI> pMainMenuCLI (new CMenuCLI());       
+std::unique_ptr<CMenuNavigation> pMenuNavigation(new CMenuNavigation());
+std::unique_ptr<CDatabaseHelper> pDatabaseHelper(new CDatabaseHelper());
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -80,7 +80,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     CreateConsole();
     ShowWindow(GetActiveWindow(), SW_HIDE);
-    pDeviceSettings = pPersistence->ReadSettings();
+    pDevProp = pPersistence->ReadSettings();
+    pInputManager = std::make_unique<CInputManager>();
     std::thread PurgeVehicle = std::thread([=] { pInputManager->PurgeVehicles(); });
 
     // Main message loop:
@@ -93,7 +94,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-    //PurgeVehicle.join();
+    PurgeVehicle.join();
     return (int) msg.wParam;
 }
 
@@ -185,110 +186,110 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_INPUT:  // HID Input Intercept
-    {
-        UINT dwSize = 0;
-
-        GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
-        LPBYTE lpb = new BYTE[dwSize];
-        if (lpb == NULL)
         {
-            return 0;
-        }
+            UINT dwSize = 0;
 
-        if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
-        {
-            OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
-        }
-
-        RAWINPUT* raw = (RAWINPUT*)lpb;
-
-        UINT lSize = 0;
-        GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, NULL, &lSize);
-        LPCSTR dvcInfo = new char[lSize + 1];   // Add one to counter no null terminator
-        GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, (LPVOID)dvcInfo, &lSize);
-
-        HRESULT  hResult;
-        TCHAR    szTempOutput[256];
-
-        PRAWINPUTDEVICELIST pRawInputDeviceList;
-        UINT  uiNumDevices = 0;
-        UINT  cbSize = sizeof(RAWINPUTDEVICELIST);
-
-        GetRawInputDeviceList(NULL, &uiNumDevices, cbSize);
-        pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(static_cast<size_t>(cbSize) * uiNumDevices);
-        GetRawInputDeviceList(pRawInputDeviceList, &uiNumDevices, cbSize);
-
-        hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" DeviceList Num Devices %d \n"), uiNumDevices);
-
-        TCHAR* psDwType[] = 
-        {
-            TEXT("RIM_TYPEMOUSE"),
-            TEXT("RIM_TYPEKEYBOARD"),
-            TEXT("RIM_TYPEHID")
-        };
-
-        for (unsigned int i = 0; i < uiNumDevices; i++) 
-        {
-            UINT                cbDataSize  = 1000;
-            TCHAR*              pType       = TEXT("Unknown");
-            RID_DEVICE_INFO     DevInfo     = { 0 };
-            char                pData[1000] = { 0 };
-
-            // For each device get the device name and then the device information
-            cbDataSize = sizeof(pData);
-            GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, pData, &cbDataSize);
-            DevInfo.cbSize = cbDataSize = sizeof(DevInfo);  // specify the buffer size
-            GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &DevInfo, &cbDataSize);
-
-            if (pRawInputDeviceList[i].dwType <= sizeof(psDwType) / sizeof(psDwType[0]))
-                pType = psDwType[pRawInputDeviceList[i].dwType];
-
-            hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Device Name = %s\n"), pData);
-            if (SUCCEEDED(hResult))
+            GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+            LPBYTE lpb = new BYTE[dwSize];
+            if (lpb == NULL)
             {
-                std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(pData);
-                if (std::find(pDeviceSettings->m_vecstrAllDevices.begin(), pDeviceSettings->m_vecstrAllDevices.end(), strTruncatedDeviceName) == pDeviceSettings->m_vecstrAllDevices.end())
+                return 0;
+            }
+
+            if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+            {
+                OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+            }
+
+            RAWINPUT* raw = (RAWINPUT*)lpb;
+
+            UINT lSize = 0;
+            GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, NULL, &lSize);
+            LPCSTR dvcInfo = new char[lSize + 1];   // Add one to counter no null terminator
+            GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, (LPVOID)dvcInfo, &lSize);
+
+            HRESULT  hResult;
+            TCHAR    szTempOutput[256];
+
+            PRAWINPUTDEVICELIST pRawInputDeviceList;
+            UINT  uiNumDevices = 0;
+            UINT  cbSize = sizeof(RAWINPUTDEVICELIST);
+
+            GetRawInputDeviceList(NULL, &uiNumDevices, cbSize);
+            pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(static_cast<size_t>(cbSize) * uiNumDevices);
+            GetRawInputDeviceList(pRawInputDeviceList, &uiNumDevices, cbSize);
+
+            hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT(" DeviceList Num Devices %d \n"), uiNumDevices);
+
+            TCHAR* psDwType[] = 
+            {
+                TEXT("RIM_TYPEMOUSE"),
+                TEXT("RIM_TYPEKEYBOARD"),
+                TEXT("RIM_TYPEHID")
+            };
+
+            for (unsigned int i = 0; i < uiNumDevices; i++) 
+            {
+                UINT                cbDataSize  = 1000;
+                TCHAR*              pType       = TEXT("Unknown");
+                RID_DEVICE_INFO     DevInfo     = { 0 };
+                char                pData[1000] = { 0 };
+
+                // For each device get the device name and then the device information
+                cbDataSize = sizeof(pData);
+                GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, pData, &cbDataSize);
+                DevInfo.cbSize = cbDataSize = sizeof(DevInfo);  // specify the buffer size
+                GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &DevInfo, &cbDataSize);
+
+                if (pRawInputDeviceList[i].dwType <= sizeof(psDwType) / sizeof(psDwType[0]))
+                    pType = psDwType[pRawInputDeviceList[i].dwType];
+
+                hResult = StringCchPrintf(szTempOutput, STRSAFE_MAX_CCH, TEXT("Device Name = %s\n"), pData);
+                if (SUCCEEDED(hResult))
                 {
-                    pDeviceSettings->m_vecstrAllDevices.push_back(strTruncatedDeviceName);
+                    std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(pData);
+                    if (std::find(pDevProp->m_vecstrAllDevices.begin(), pDevProp->m_vecstrAllDevices.end(), strTruncatedDeviceName) == pDevProp->m_vecstrAllDevices.end())
+                    {
+                        pDevProp->m_vecstrAllDevices.push_back(strTruncatedDeviceName);
+                    }
                 }
             }
-        }
-        if (raw->header.dwType == RIM_TYPEKEYBOARD && raw->data.keyboard.Flags == pPersistence->m_sKeyDownFlag) // If keyboard input event && is in down state to prevent double inputs being processed
-        {
-            std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(dvcInfo);    // Truncate device name to remove excess data
-            unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
-
-            if (std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDeviceSettings->m_vecstrRegisteredDevices.end())    // Check to see if it is a registered scanner device
+            if (raw->header.dwType == RIM_TYPEKEYBOARD && raw->data.keyboard.Flags == pPersistence->m_sKeyDownFlag) // If keyboard input event && is in down state to prevent double inputs being processed
             {
-                auto it = std::find(pDeviceSettings->m_vecstrRegisteredDevices.begin(), pDeviceSettings->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName);  // Create iterator to get device index
-                int deviceIndex = std::distance(pDeviceSettings->m_vecstrRegisteredDevices.begin(), it);                                                            // Assign deviceIndex here
-                pInputManager->InputDetected(strTruncatedDeviceName, deviceIndex, cTranslatedKey);   // Filter with input manager class
+                std::string strTruncatedDeviceName = pPersistence->TruncateHIDName(dvcInfo);    // Truncate device name to remove excess data
+                unsigned char cTranslatedKey = (char)raw->data.keyboard.VKey;                   // Converts Virtual Key to Numerical key, using an unsigned to char to avoid assertions with negative chars on isdigit & isalpha checks
+
+                if (std::find(pDevProp->m_vecstrRegisteredDevices.begin(), pDevProp->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName) != pDevProp->m_vecstrRegisteredDevices.end())    // Check to see if it is a registered scanner device
+                {
+                    auto it = std::find(pDevProp->m_vecstrRegisteredDevices.begin(), pDevProp->m_vecstrRegisteredDevices.end(), strTruncatedDeviceName);  // Create iterator to get device index
+                    int deviceIndex = std::distance(pDevProp->m_vecstrRegisteredDevices.begin(), it);                                                            // Assign deviceIndex here
+                    pInputManager->InputDetected(strTruncatedDeviceName, deviceIndex, cTranslatedKey);   // Filter with input manager class
+                }
+                else    // Handle keyboard press in CLI menu
+                {
+                    pMenuNavigation->BuildCommand(cTranslatedKey);                          // Build input commands with menu navigator class
+                    pMenuNavigation->RegisterNavigationDevice(strTruncatedDeviceName);      // Call to register keyboard that user is typing in CLI with, to avoid registering it as a scanner device
+                }
             }
-            else    // Handle keyboard press in CLI menu
-            {
-                pMenuNavigation->BuildCommand(cTranslatedKey);                          // Build input commands with menu navigator class
-                pMenuNavigation->RegisterNavigationDevice(strTruncatedDeviceName);      // Call to register keyboard that user is typing in CLI with, to avoid registering it as a scanner device
-            }
+
+            delete[] lpb;                   // Delete LPByte object
+            delete[] dvcInfo;               // Delete dvcInfo 
+
+            InvalidateRect(hWnd, NULL, TRUE);	// Clear Window
+            InvalidateRect(hWnd, NULL, NULL);	// Update Window
+
+            // _CrtDumpMemoryLeaks();
         }
-
-        delete[] lpb;                   // Delete LPByte object
-        delete[] dvcInfo;               // Delete dvcInfo 
-
-        InvalidateRect(hWnd, NULL, TRUE);	// Clear Window
-        InvalidateRect(hWnd, NULL, NULL);	// Update Window
-
-        // _CrtDumpMemoryLeaks();
-    }
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             EndPaint(hWnd, &ps);
         }
-        break;
+        break;    
     case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
+            PostQuitMessage(0);
+            break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

@@ -94,8 +94,9 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
             OutputDebugString(" Speeding \n");
             #endif
 
-            RemoveVehicle(vVehicle);    // Delete call
             m_strVehicleOffence = "Speeding";
+            pDatabaseHelper.UpdateDatabase(vVehicle->m_strRegistration, m_strVehicleOffence, pDevProp.m_strScannerLocation, pDevProp.m_strDatabaseDirectory);
+            RemoveVehicle(vVehicle);    // Delete call
         }
     }
     else if(vVehicle->m_iDirectionOrigin == vVehicle->m_vecDbScanningTimes.size() - 1)  // If started from last possible location
@@ -107,8 +108,9 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
             OutputDebugString(" Speeding & Wrong Way \n");
             #endif
 
-            RemoveVehicle(vVehicle);    // Delete call
             m_strVehicleOffence = "Speeding & Wrong Way";
+            pDatabaseHelper.UpdateDatabase(vVehicle->m_strRegistration, m_strVehicleOffence, pDevProp.m_strScannerLocation, pDevProp.m_strDatabaseDirectory);
+            RemoveVehicle(vVehicle);    // Delete call
 
         }
         else // No speed limit broken, wrong way is passed
@@ -118,8 +120,9 @@ void CInputManager::CheckVehicle(CVehicle *vVehicle)
             OutputDebugString(" Wrong Way \n");
             #endif
 
-            RemoveVehicle(vVehicle);    // Delete call
             m_strVehicleOffence = "Wrong Way";
+            pDatabaseHelper.UpdateDatabase(vVehicle->m_strRegistration, m_strVehicleOffence, pDevProp.m_strScannerLocation, pDevProp.m_strDatabaseDirectory);
+            RemoveVehicle(vVehicle);    // Delete call
         }
     }
 }

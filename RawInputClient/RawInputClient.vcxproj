@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Clock.h" />
+    <ClInclude Include="DatabaseHelper.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MenuCLI.h" />
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="DatabaseHelper.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MenuCLI.cpp" />
     <ClCompile Include="MenuNavigation.cpp" />
