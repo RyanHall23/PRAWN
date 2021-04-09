@@ -13,8 +13,11 @@ namespace PRAWN_Viewer
     public partial class MainWindow : Window
     {
         private OleDbConnection con;
-        private OleDbDataReader rd;
+        private OleDbDataReader rd; 
         private System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+
+        private const string strSQLSelectAllSatement = "select* from [tblOffences]";
+        private const string strConnectionStringEngine = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
 
         public MainWindow()
         {
@@ -28,34 +31,27 @@ namespace PRAWN_Viewer
             {
                 Filter = "Database Files|*.mdb;*.accdb;"
             };
+
             if (dlg.ShowDialog() == true)
             {
-                string connectstring = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + dlg.FileName);
+                string connectstring = string.Format(strConnectionStringEngine + dlg.FileName);
                 con = new OleDbConnection(connectstring);
                 con.Open();
 
-                OleDbCommand cmd = new OleDbCommand
-                {
-                    CommandText = "select* from [tblOffences]",
-                    Connection = con
-                };
-                rd = cmd.ExecuteReader();
-                while (rd.Read())
-                {
-                    dg_Offences.ItemsSource = rd;
-                    dg_Offences.Items.Refresh();
-                    tabNav.SelectedItem = LogsTab;    // Move to logs tab
-                    CreateTimer();
-                }
+                UpdateDataGrid();
             }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (rd != null && !rd.IsClosed)
+            {
                 rd.Close();
+            }
             if (con != null && con.State == ConnectionState.Open)
+            {
                 con.Close();
+            }
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -75,9 +71,14 @@ namespace PRAWN_Viewer
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
+            UpdateDataGrid();
+        }
+
+        private void UpdateDataGrid()
+        {
             OleDbCommand cmd = new OleDbCommand
             {
-                CommandText = "select* from [tblOffences]",
+                CommandText = strSQLSelectAllSatement,
                 Connection = con
             };
             rd = cmd.ExecuteReader();
@@ -85,6 +86,8 @@ namespace PRAWN_Viewer
             {
                 dg_Offences.ItemsSource = rd;
                 dg_Offences.Items.Refresh();
+                tabNav.SelectedItem = LogsTab;    // Move to logs tab, displaying table
+                CreateTimer();
             }
         }
     }
