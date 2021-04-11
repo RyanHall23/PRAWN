@@ -6,6 +6,7 @@
 
 #include "MenuCLI.h"
 #include "Persistence.h"
+#include "DatabaseHelper.h"
 
 class CMenuNavigation
 {
@@ -29,6 +30,7 @@ private:
 	CPersistence	m_pPersistence;
 	CMenuCLI		m_pMenuCli;
 	CPersistence::DeviceProperties	m_pDevProp;
+	CDatabaseHelper m_pDatabaseHelper;
 
 	enum MainMenuPosition
 	{
@@ -46,7 +48,8 @@ private:
 		EditActualLocation	= 22,
 
 		// Database Menu Navigation group
-		EditDBDirectoryMenu = 30
+		EditDBDirectoryMenu = 30,
+		TestDBConnectionMenu = 31
 	};
 
 	enum KeyCodes

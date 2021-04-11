@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "Persistence.h"
+#include "DatabaseHelper.h"
 
 class CMenuCLI
 {
@@ -18,6 +19,7 @@ private:
 	const std::string M_STR_MAINMENULINE1		= "		1.	Edit Scanner Devices\n";
 	const std::string M_STR_MAINMENULINE2		= "		2.	Edit Speed and Location Properties\n";
 	const std::string M_STR_MAINMENULINE3		= "		3.	Edit Database Directory\n";
+	const std::string M_STR_MAINMENULINE4		= "		4.	Test Database Connection\n";
 	const std::string M_STR_COPYRIGHTNOTICE		= "			Copyright (c) 2020 | Ryan Hall | https://github.com/RyanHall23 \n";
 
 	// Edit Selected Devices Menu String
@@ -54,8 +56,13 @@ private:
 	const std::string M_STR_EDITDBDIR3 = "		1.	Select Database File\n";
 	const std::string M_STR_EDITDBDIR4 = "		0.	Return to Main Menu\n";
 
+	// Database Test Result Strings
+	const std::string M_STR_TESTDB1 = "			Test the connection to the database: ";
+	const std::string M_STR_TESTDB2 = "			Database connection result: ";
+	const std::string M_STR_TESTDB3 = "		1.	Test Database \n";
+	const std::string M_STR_TESTDB4 = "		0.	Return to Main Menu\n";
 
-
+	static std::string m_strDBTestResult; // = "A Test has not been ran";
 
 	// Text formatting strings 
 	const std::string M_NEWLINE = "\n";
@@ -87,4 +94,6 @@ public:
 	// Database Location/Name Menu Nav Group
 
 	void PrintDBDirNameMenu();
+	void PrintDBTestMenuResult();
+	void UpdateDatabaseResultString(std::string strResult);
 };
