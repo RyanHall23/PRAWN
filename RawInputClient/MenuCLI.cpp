@@ -1,12 +1,15 @@
 #include "MenuCLI.h"
 
+std::string	CMenuCLI::m_strDBTestResult = "A Test has not been ran";	// Initialise static for storing database test results
+
+
 /// <summary>
 /// Print the main menu splash screen in the console
 /// </summary>
 void CMenuCLI::PrintMainMenu()
 {
 	ClearMenu();
-	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE<< M_STR_MAINMENULINE1 << M_STR_MAINMENULINE2 << M_STR_MAINMENULINE3 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE<< M_STR_MAINMENULINE1 << M_STR_MAINMENULINE2 << M_STR_MAINMENULINE3 << M_STR_MAINMENULINE4 << M_NEWLINE << M_STR_COPYRIGHTNOTICE;
 }
 
 /// <summary>
@@ -112,6 +115,17 @@ void CMenuCLI::PrintDBDirNameMenu()
 }
 
 /// <summary>
+/// Print Database test results menu
+/// </summary>
+void CMenuCLI::PrintDBTestMenuResult()
+{
+	std::unique_ptr<CPersistence::DeviceProperties> pPersistence(new CPersistence::DeviceProperties());
+
+	ClearMenu();
+	std::cout << M_STR_SOFTWARETITLE << M_NEWLINE << M_STR_TESTDB1 << pPersistence->m_strDatabaseDirectory << M_NEWLINE << M_STR_TESTDB2 << m_strDBTestResult << M_NEWLINE << M_NEWLINE << M_STR_TESTDB3 << M_STR_TESTDB4;
+}
+
+/// <summary>
 /// Print the all connected devices scanner device list
 /// </summary>
 void CMenuCLI::PrintAllConnectedDeviceList()
@@ -147,6 +161,15 @@ void CMenuCLI::PrintRegisteredDeviceList()
 	{
 		std::cout << M_TABLINE << M_TABLINE << i + 1 << ".	" << pPersistence->m_vecstrRegisteredDevices.at(i) << M_NEWLINE;
 	}
+}
+
+/// <summary>
+/// Updates Result string from database connection test
+/// </summary>
+/// <param name="strResult"></param>
+void CMenuCLI::UpdateDatabaseResultString(std::string strResult)
+{
+	m_strDBTestResult = strResult;
 }
 
 /// <summary>

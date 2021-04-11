@@ -1,6 +1,6 @@
 #include "MenuNavigation.h"
 
-std::string		CMenuNavigation::m_strNavigationDevice = "";	// Initialise static for storing device name that is navigating menu
+std::string	CMenuNavigation::m_strNavigationDevice = "";	// Initialise static for storing device name that is navigating menu
 
 CMenuNavigation::CMenuNavigation()
 {
@@ -9,6 +9,7 @@ CMenuNavigation::CMenuNavigation()
 
 CMenuNavigation::~CMenuNavigation()
 {
+
 }
 
 /// <summary>
@@ -114,6 +115,12 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		{
 			m_pMenuCli.PrintDBDirNameMenu();				// Print 
 			eMenuPosition = EditDBDirectoryMenu;			// Set current menu position to DB Directory Edit Menu
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+		if (iMenuInput == 4)	// Test database connection screen entry
+		{
+			m_pMenuCli.PrintDBTestMenuResult();				// Print DB Connection result
+			eMenuPosition = TestDBConnectionMenu;			// Set current menu position to DB Connection Test Menu
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
@@ -323,9 +330,22 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
 	}
+	if (eMenuPosition == TestDBConnectionMenu)
+	{
+		if (iMenuInput == 0)	// Return to Main Menu
+		{
+			m_pMenuCli.PrintMainMenu();						// Print Main Menu
+			eMenuPosition = MainMenu;						// Set current menu position to MainMenu
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+		if (iMenuInput == 1)	// Database test
+		{
+			m_pDatabaseHelper.TestDatabase();
+			m_pMenuCli.PrintDBTestMenuResult();
+			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
+		}
+	}
 #pragma endregion
-
-
 }
 
 /// <summary>
@@ -345,21 +365,22 @@ bool CMenuNavigation::IsValidCharacter(char translatedKey)
 /// <returns></returns>
 int CMenuNavigation::ConvertMenuInputToInt(std::string cmdMsg)
 {
+	int validInput;
+
 	try 
 	{
-		int validInput;
 		validInput = std::stoi(cmdMsg);
-		if (validInput >= 0)
+		if (validInput < 0)
 		{
-			return validInput;
+			validInput = -1;
 		}
 	}
 	catch (const std::exception e) 
 	{
-		return -1;	// Return
+		validInput = -1;
 	}
 
-	return -1;		// Return
+	return validInput;		// Return
 }
 
 /// <summary>

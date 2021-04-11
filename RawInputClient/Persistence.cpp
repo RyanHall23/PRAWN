@@ -7,7 +7,7 @@ std::string					CPersistence::DeviceProperties::m_strScannerLocation;		// Scanne
 int							CPersistence::DeviceProperties::m_iSpeedLimit;				// Speed limit at location				(MPH)
 double						CPersistence::DeviceProperties::m_dbScannerDistance;		// Distance between scanners			(Metres)
 double						CPersistence::DeviceProperties::m_dbOptimumTravelTime;		// Expected Travel time between scanners
-std::string					CPersistence::DeviceProperties::m_strDatabaseDirectory;		// Database location on disc & name
+std::string					CPersistence::DeviceProperties::m_strDatabaseDirectory;		// Database location on disk & name
 
 CPersistence::CPersistence()
 {
