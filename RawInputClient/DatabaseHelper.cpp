@@ -89,6 +89,10 @@ bool CDatabaseHelper::UpdateDatabase(std::string strRegistrationPlate, std::stri
     return bRet;
 }
 
+/// <summary>
+/// Returns a bool for pass/fail result of database connection test
+/// </summary>
+/// <returns></returns>
 bool CDatabaseHelper::TestDatabase()
 {
     CMenuCLI pMenuCLI;
