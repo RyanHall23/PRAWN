@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Persistence.h"
+
 #include <stdio.h>
 #include <tchar.h>
 #include <Windows.h>
@@ -12,5 +14,8 @@ public:
     CDatabaseHelper();
     ~CDatabaseHelper();
     bool UpdateDatabase(std::string strRegistrationPlate, std::string strOffence, std::string strLocation, std::string strDBLocation);
+    bool TestDatabase();
+private:
+    CPersistence::DeviceProperties pDevProp;
 };
 
