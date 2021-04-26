@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Persistence.h"
 
 #include <stdio.h>
