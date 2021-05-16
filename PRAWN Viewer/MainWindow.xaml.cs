@@ -13,7 +13,7 @@ namespace PRAWN_Viewer
     public partial class MainWindow : Window
     {
         private OleDbConnection con;
-        private OleDbDataReader rd; 
+        private OleDbDataReader rd;
         private System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
 
         private const string strSQLSelectAllSatement = "select* from [tblOffences]";
@@ -64,14 +64,15 @@ namespace PRAWN_Viewer
 
         private void CreateTimer()
         {
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Tick += new EventHandler(Timer_OnTick);
             dispatcherTimer.Interval = new TimeSpan(0, 1, 0);   // Update every minute
             dispatcherTimer.Start();
         }
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        private void Timer_OnTick(object sender, EventArgs e)
         {
             UpdateDataGrid();
+            UpdateMap();
         }
 
         private void UpdateDataGrid()
@@ -89,6 +90,14 @@ namespace PRAWN_Viewer
                 tabNav.SelectedItem = LogsTab;    // Move to logs tab, displaying table
                 CreateTimer();
             }
+        }
+
+        private void UpdateMap()
+        {
+            // Get bottom most row and location column value
+            // Append value on to Google Maps link
+            // Run in WebView using google maps link
+            // Manual update?
         }
     }
 }

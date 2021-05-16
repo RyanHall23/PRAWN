@@ -15,6 +15,8 @@
 #include "../RawInputClient/Clock.cpp"
 #include "../RawInputClient/DatabaseHelper.h"
 #include "../RawInputClient/DatabaseHelper.cpp"
+#include "../RawInputClient/MenuCLI.h"
+#include "../RawInputClient/MenuCLI.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
