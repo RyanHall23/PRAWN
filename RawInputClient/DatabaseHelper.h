@@ -1,5 +1,6 @@
 #pragma once
 #include "Persistence.h"
+#include "MenuCLI.h"
 
 #include <stdio.h>
 #include <tchar.h>

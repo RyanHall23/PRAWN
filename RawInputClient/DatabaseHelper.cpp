@@ -1,5 +1,4 @@
 #include "DatabaseHelper.h"
-#include "MenuCLI.h"
 
 CDatabaseHelper::CDatabaseHelper()
 {
