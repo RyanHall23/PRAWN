@@ -48,12 +48,12 @@ std::string CMenuNavigation::OpenFile(char* filter, HWND owner)
 	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;	// OFN_NOCHANGEDIR - Restores back to default working directory, changing the save destination of the settings file
 	ofn.lpstrDefExt = "";
 
-	std::string fileNameStr;
+	std::string strFileName;
 
 	if (GetOpenFileName(&ofn))
-		fileNameStr = fileName;
+		strFileName = fileName;
 
-	return fileNameStr;
+	return strFileName;
 }
 
 
