@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Web.WebView2.Core;
 
 namespace PRAWN_Viewer
 {
@@ -14,15 +15,16 @@ namespace PRAWN_Viewer
     {
         private OleDbConnection con;
         private OleDbDataReader rd;
-        private System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        private readonly System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
 
         private const string strSQLSelectAllSatement = "select* from [tblOffences]";
         private const string strConnectionStringEngine = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
 
+        private int iTotalRows = 0;
+
         public MainWindow()
         {
             InitializeComponent();
-            WbMapViewer.Navigate("https://www.google.com");
         }
 
         private void BtnOpenDatabase_Click(object sender, RoutedEventArgs e)
@@ -37,7 +39,7 @@ namespace PRAWN_Viewer
                 string connectstring = string.Format(strConnectionStringEngine + dlg.FileName);
                 con = new OleDbConnection(connectstring);
                 con.Open();
-
+                tabNav.SelectedItem = LogsTab;    // Move to logs tab, displaying table
                 UpdateDataGrid();
             }
         }
@@ -54,18 +56,10 @@ namespace PRAWN_Viewer
             }
         }
 
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (MapTab.IsSelected)
-            {
-                // Update web stuff
-            }
-        }
-
         private void CreateTimer()
         {
             dispatcherTimer.Tick += new EventHandler(Timer_OnTick);
-            dispatcherTimer.Interval = new TimeSpan(0, 1, 0);   // Update every minute
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);   // Update every minute
             dispatcherTimer.Start();
         }
 
@@ -87,17 +81,17 @@ namespace PRAWN_Viewer
             {
                 dg_Offences.ItemsSource = rd;
                 dg_Offences.Items.Refresh();
-                tabNav.SelectedItem = LogsTab;    // Move to logs tab, displaying table
                 CreateTimer();
             }
         }
 
         private void UpdateMap()
         {
-            // Get bottom most row and location column value
-            // Append value on to Google Maps link
-            // Run in WebView using google maps link
-            // Manual update?
+            if (webView != null && webView.CoreWebView2 != null && iTotalRows < dg_Offences.Items.Count)
+            {
+                iTotalRows = dg_Offences.Items.Count;
+                webView.CoreWebView2.Navigate("http://bing.com");
+            }
         }
     }
 }
