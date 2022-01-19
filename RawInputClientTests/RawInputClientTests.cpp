@@ -34,6 +34,7 @@ namespace RawInputClientTests
 			bool target = false;
 
 			CPersistence::DeviceProperties *pDeviceSettings = new CPersistence::DeviceProperties();
+			pDeviceSettings->m_vecstrRegisteredDevices.clear();
 			pDeviceSettings->m_vecstrAllDevices.push_back("devA");
 			pDeviceSettings->m_vecstrAllDevices.push_back("devB");
 			pDeviceSettings->RegisterDevice(1, "devA");	// Selected index from UI of alldevices vector, and navigation device name passed through, can't add device names that are navigation devices
@@ -55,6 +56,7 @@ namespace RawInputClientTests
 			bool target = false;
 
 			CPersistence::DeviceProperties* pDeviceSettings = new CPersistence::DeviceProperties();
+			pDeviceSettings->m_vecstrRegisteredDevices.clear();
 			pDeviceSettings->m_vecstrRegisteredDevices.push_back("devA");	// Emulate a registered device being added
 			pDeviceSettings->DeregisterDevice(0);
 
@@ -75,6 +77,7 @@ namespace RawInputClientTests
 			bool target = false;
 			CInputManager* pInputManager = new CInputManager();
 			pInputManager->pDevProp.m_dbOptimumTravelTime = 0.01;
+			pInputManager->pDevProp.m_vecstrRegisteredDevices.clear();
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager->pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
@@ -107,6 +110,7 @@ namespace RawInputClientTests
 
 			CInputManager *pInputManager = new CInputManager();
 			pInputManager->pDevProp.m_dbOptimumTravelTime = 2.00;
+			pInputManager->pDevProp.m_vecstrRegisteredDevices.clear();
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devC");
@@ -143,6 +147,7 @@ namespace RawInputClientTests
 
 			CInputManager* pInputManager = new CInputManager();
 			pInputManager->pDevProp.m_dbOptimumTravelTime = 2.00;
+			pInputManager->pDevProp.m_vecstrRegisteredDevices.clear();
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devC");
@@ -180,6 +185,7 @@ namespace RawInputClientTests
 			bool target = false;
 			CInputManager *pInputManager = new CInputManager();
 			pInputManager->pDevProp.m_dbOptimumTravelTime = 2.00;
+			pInputManager->pDevProp.m_vecstrRegisteredDevices.clear();
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager->pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
@@ -211,6 +217,7 @@ namespace RawInputClientTests
 			bool target = false;
 			CInputManager *pInputManager = new CInputManager();
 			pInputManager->pDevProp.m_dbOptimumTravelTime = 0.1;
+			pInputManager->pDevProp.m_vecstrRegisteredDevices.clear();
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager->pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
@@ -242,6 +249,7 @@ namespace RawInputClientTests
 			bool target = false;
 			CInputManager *pInputManager = new CInputManager();
 			pInputManager->pDevProp.m_dbOptimumTravelTime = 2.00;
+			pInputManager->pDevProp.m_vecstrRegisteredDevices.clear();
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devA");
 			pInputManager->pDevProp.m_vecstrRegisteredDevices.push_back("devB");
 			pInputManager->pDevProp.m_strScannerLocation = " A1, Newcastle upon Tyne";
