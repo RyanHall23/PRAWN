@@ -14,6 +14,7 @@ CDatabaseHelper::~CDatabaseHelper()
 /// Updates to database using selected directories using ODBC
 /// https://docs.microsoft.com/en-us/previous-versions/office/developer/office-2007/cc811599(v=office.12)
 /// 64-bit Install https://www.microsoft.com/en-gb/download/details.aspx?id=13255
+/// 64-bit Installs MUST use a 64bit CPU build!!
 /// </summary>
 /// <param name="strRegistrationPlate"></param>
 /// <param name="strOffence"></param>
