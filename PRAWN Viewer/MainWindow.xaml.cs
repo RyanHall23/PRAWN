@@ -20,8 +20,6 @@ namespace PRAWN_Viewer
         private const string strSQLSelectAllSatement = "select* from [tblOffences]";
         private const string strConnectionStringEngine = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
 
-        private int iTotalRows = 0;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -58,9 +56,12 @@ namespace PRAWN_Viewer
 
         private void CreateTimer()
         {
-            dispatcherTimer.Tick += new EventHandler(Timer_OnTick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);   // Update every minute
-            dispatcherTimer.Start();
+            if(!dispatcherTimer.IsEnabled)
+            {
+                dispatcherTimer.Tick += new EventHandler(Timer_OnTick);
+                dispatcherTimer.Interval = new TimeSpan(0, 0, 10);   // Update every minute
+                dispatcherTimer.Start();
+            }
         }
 
         private void Timer_OnTick(object sender, EventArgs e)
@@ -87,10 +88,11 @@ namespace PRAWN_Viewer
 
         private void UpdateMap()
         {
-            if (webView != null && webView.CoreWebView2 != null && iTotalRows < dg_Offences.Items.Count)
+            if (webView?.CoreWebView2 != null && dg_Offences.Items.Count > 0)
             {
-                iTotalRows = dg_Offences.Items.Count;
-                webView.CoreWebView2.Navigate("http://bing.com");
+                IDataRecord rec = (IDataRecord)dg_Offences.Items[dg_Offences.Items.Count - 1];
+                webView.CoreWebView2.Navigate("https://www.google.com/maps/place/" + rec.GetString(2));
+                // Future Work: string location = rec.GetString(rec.GetOrdinal("Location"); for column name.
             }
         }
     }
