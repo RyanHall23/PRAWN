@@ -20,6 +20,7 @@ namespace PRAWN_Viewer
         private const string strSQLSelectAllSatement = "select* from [tblOffences]";
         private const string strConnectionStringEngine = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
 
+        private string strCurrentLocation = ""; // Tracks most recent location in DB for reloading of map
         public MainWindow()
         {
             InitializeComponent();
@@ -91,8 +92,14 @@ namespace PRAWN_Viewer
             if (webView?.CoreWebView2 != null && dg_Offences.Items.Count > 0)
             {
                 IDataRecord rec = (IDataRecord)dg_Offences.Items[dg_Offences.Items.Count - 1];
-                webView.CoreWebView2.Navigate("https://www.google.com/maps/place/" + rec.GetString(2));
-                // Future Work: string location = rec.GetString(rec.GetOrdinal("Location"); for column name.
+                string strLocation = rec.GetString(2);  // Get location column
+
+                if (strLocation != strCurrentLocation)  // If not active map location, go to most recent
+                {
+                    webView.CoreWebView2.Navigate("https://www.google.com/maps/place/" + strLocation);
+                    strCurrentLocation = strLocation;
+                    // Future Work: string location = rec.GetString(rec.GetOrdinal("Location"); for column name.
+                }
             }
         }
     }
