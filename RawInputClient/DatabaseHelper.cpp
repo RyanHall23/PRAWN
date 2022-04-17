@@ -15,6 +15,8 @@ CDatabaseHelper::~CDatabaseHelper()
 /// https://docs.microsoft.com/en-us/previous-versions/office/developer/office-2007/cc811599(v=office.12)
 /// 64-bit Install https://www.microsoft.com/en-gb/download/details.aspx?id=13255
 /// 64-bit Installs MUST use a 64bit CPU build!!
+/// Must be the only ODBC driver?? (Microsoft Server ODBC must not be installed) 2010 Only (Cannot run with 2016 installed also, more precise command?)
+/// If 2016 is installed ontop of 2010 both must be uninstalled and 2010 (linked) ODBC driver must be re-installed
 /// </summary>
 /// <param name="strRegistrationPlate"></param>
 /// <param name="strOffence"></param>
@@ -80,7 +82,6 @@ bool CDatabaseHelper::UpdateDatabase(std::string strRegistrationPlate, std::stri
         SQLDisconnect(hDbc);
         SQLFreeHandle(SQL_HANDLE_DBC, hDbc);
         SQLFreeHandle(SQL_HANDLE_ENV, hEnv);
-
     }
     catch (...)
     {
