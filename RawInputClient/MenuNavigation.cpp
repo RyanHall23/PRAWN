@@ -340,7 +340,8 @@ void CMenuNavigation::ProcessCommand(std::string cmdMsg)
 		}
 		if (iMenuInput == 1)	// Database test
 		{
-			m_pDatabaseHelper.TestDatabase();
+			std::thread databaseThread(&CDatabaseHelper::TestDatabase, CDatabaseHelper());
+			databaseThread.join();
 			m_pMenuCli.PrintDBTestMenuResult();
 			return;							// Break out of ProcessCommand method to avoid multiple cases being triggered at once
 		}
