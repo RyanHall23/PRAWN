@@ -33,8 +33,8 @@ std::unique_ptr<CPersistence::DeviceProperties> CPersistence::ReadSettings()
 	{
 		#ifdef _DEBUG
 		OutputDebugString(TEXT("File failed to open | Not Found \n"));		// Debug output File not found/failed to open
-		return newConfig;
 		#endif
+		return newConfig;
 	}
 	else
 	{

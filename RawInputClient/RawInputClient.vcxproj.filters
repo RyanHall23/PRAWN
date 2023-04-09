@@ -51,6 +51,9 @@
     <ClInclude Include="DatabaseHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VESCheck.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RawInputClient.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DatabaseHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VESCheck.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
