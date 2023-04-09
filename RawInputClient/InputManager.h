@@ -10,6 +10,7 @@
 #include "Registration.h"
 #include "Persistence.h"
 #include "DatabaseHelper.h"
+#include "VESCheck.h"
 #include "Vehicle.h"
 #include "Clock.h"
 
@@ -26,7 +27,8 @@ public:
 	void RemoveVehicle(CVehicle* vVehicle);
 	bool VehicleExists(CVehicle* vVehicle);
 	std::tuple<CVehicle*, int> GetVehicle(std::string strRegistrationPlate);
-	void SetVehicle(CVehicle* vVehicle, int iVecIndex);	
+	void SetVehicle(CVehicle* vVehicle, int iVecIndex);
+	void ValidateVehicle(CVehicle* vVehicle);
 	void PurgeVehicles();
 
 	std::vector<CVehicle*> m_vecActiveVehicles;
@@ -36,6 +38,7 @@ public:
 	CRegistration pRegistration;					
 	CClock pClock;
 	CDatabaseHelper pDatabaseHelper;
+	CVESCheck pVesCheck;
 
 	std::string m_strVehicleOffence;	// Used for testing vehicle outcome through circuit
 private:

@@ -49,7 +49,10 @@ void CInputManager::InputDetected(std::string strShortDeviceName, int iDeviceInd
         {
             pVehicle = std::get<0>(aGetVehicle);
             iVehicleIndex = std::get<1>(aGetVehicle);
-
+            // check if in array cache
+            // check vehicle
+            // add to array cache
+            // purge array cache daily
             if (pVehicle->m_iDirectionOrigin != iDeviceIndex)   // Edge case : Vehicle passes back over origin scanner, not reaching both scanners
             {
                 pVehicle->m_vecDbScanningTimes.at(iDeviceIndex) = pClock.GetTime();
@@ -293,4 +296,13 @@ std::tuple<CVehicle*, int> CInputManager::GetVehicle(std::string strRegistration
 void CInputManager::SetVehicle(CVehicle* vVehicle, int iVecIndex)
 {
     m_vecActiveVehicles.at(iVecIndex) = vVehicle;
+}
+
+/// <summary>
+/// Validate MOT/TAX on reg plate
+/// </summary>
+/// <param name="vVehicle"></param>
+void CInputManager::ValidateVehicle(CVehicle* vVehicle)
+{
+    //pVesCheck.
 }

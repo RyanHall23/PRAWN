@@ -17,6 +17,8 @@
 #include "../RawInputClient/DatabaseHelper.cpp"
 #include "../RawInputClient/MenuCLI.h"
 #include "../RawInputClient/MenuCLI.cpp"
+#include "../RawInputClient/VESCheck.h"
+#include "../RawInputClient/VESCheck.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -271,6 +273,15 @@ namespace RawInputClientTests
 
 			pInputManager = new CInputManager();
 			Assert::IsTrue(target);
+		}
+
+		/// <summary>
+		/// Test: Connection to VES API
+		/// </summary>
+		TEST_METHOD(VESAPIConnectionTest)
+		{
+			CVESCheck* pVesCheck = new CVESCheck();
+			pVesCheck->CheckTaxMOT("TE57VRN");
 		}
 	};
 }
